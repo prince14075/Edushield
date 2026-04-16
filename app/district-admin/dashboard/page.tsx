@@ -40,7 +40,7 @@ export default function DistrictAdminDashboard() {
       });
       const data = await res.json();
       if (data.success) {
-        alert(`Application ${action}d successfully.`);
+        alert(data.message || `Application ${action}d successfully.`);
         fetchPending(); // Refresh list
       } else {
         alert(data.error);

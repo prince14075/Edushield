@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Copy, Building2, User, KeyRound, CheckCircle2, ArrowRight, ShieldCheck, Upload } from "lucide-react";
+import { Copy, Building2, User, KeyRound, CheckCircle2, ArrowRight, ShieldCheck, Upload, X, Eye, Scan } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -13,7 +13,7 @@ export default function RegisterInstituteForm() {
   const [copied, setCopied] = useState(false);
   
   const defaultFormData = {
-    name: "Registered Coaching Center",
+    name: "",
     ownerDetails: {
       name: "",
       email: "",
@@ -25,8 +25,8 @@ export default function RegisterInstituteForm() {
     infrastructure: { totalArea: 0, totalClassrooms: 0, classroomDimensions: "" },
     facilities: { drinkingWater: false, separateToilets: false, cctvInstalled: false, firstAid: false, ventilation: false, emergencyExits: false, facilityPhotos: [] as string[] },
     safetyCertificates: [
-      { type: 'Fire', url: 'mock_fire_cert.pdf', aiVerificationStatus: 'Pending' },
-      { type: 'Building', url: 'mock_building_cert.pdf', aiVerificationStatus: 'Pending' }
+      { type: 'Fire', url: 'mock_fire_cert.pdf', aiVerificationStatus: 'Pending', fileName: '' },
+      { type: 'Building', url: 'mock_building_cert.pdf', aiVerificationStatus: 'Pending', fileName: '' }
     ],
     undertakings: {
       noUnder16: false,
@@ -40,6 +40,8 @@ export default function RegisterInstituteForm() {
 
   const [formData, setFormData] = useState(defaultFormData);
   const [ownerPhotoPreview, setOwnerPhotoPreview] = useState<string | null>(null);
+  const [previewModal, setPreviewModal] = useState<{ isOpen: boolean, url: string, name: string, type: 'image' | 'pdf', uploadCallback?: (url: string, file: File) => void, isOwnerPhoto?: boolean } | null>(null);
+  const [ocrStatus, setOcrStatus] = useState<{ [key: string]: { status: 'scanning' | 'verified' | 'failed', text?: string } }>({});
 
   // OTP Verification States
   const [phoneOTP, setPhoneOTP] = useState("");
@@ -67,7 +69,7 @@ export default function RegisterInstituteForm() {
       if (data.success) {
         if (type === "Email") setEmailOTPSent(true);
         else setPhoneOTPSent(true);
-        alert(`OTP sent to ${identifier}`);
+        alert(data.message || `OTP sent to ${identifier}`);
       } else alert(data.error);
     } catch { alert("Failed to send OTP"); }
   };
@@ -125,7 +127,7 @@ export default function RegisterInstituteForm() {
     }
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, callback: (url: string) => void, isOwnerPhoto = false) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, callback: (url: string, file: File) => void, isOwnerPhoto = false) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       
@@ -140,7 +142,37 @@ export default function RegisterInstituteForm() {
       try {
         const res = await fetch("/api/upload", { method: "POST", body: form });
         const data = await res.json();
-        if (data.success) callback(data.url);
+        if (data.success) {
+          callback(data.url, file);
+          setPreviewModal({
+            isOpen: true,
+            url: data.url,
+            name: file.name,
+            type: file.type.startsWith('image/') || isOwnerPhoto ? 'image' : 'pdf',
+            uploadCallback: callback,
+            isOwnerPhoto: isOwnerPhoto
+          });
+
+          // Kick off OCR
+          if (file.type === 'application/pdf' || isOwnerPhoto) {
+            const ocrKey = isOwnerPhoto ? 'ownerPhoto' : file.name;
+            setOcrStatus(prev => ({ ...prev, [ocrKey]: { status: 'scanning' } }));
+
+            const ocrForm = new FormData();
+            ocrForm.append("file", file);
+            try {
+              const ocrRes = await fetch("/api/ocr", { method: "POST", body: ocrForm });
+              const ocrData = await ocrRes.json();
+              if (ocrData.success) {
+                setOcrStatus(prev => ({ ...prev, [ocrKey]: { status: 'verified', text: ocrData.text } }));
+              } else {
+                setOcrStatus(prev => ({ ...prev, [ocrKey]: { status: 'failed' } }));
+              }
+            } catch {
+              setOcrStatus(prev => ({ ...prev, [ocrKey]: { status: 'failed' } }));
+            }
+          }
+        }
       } catch (err) {
         alert("Upload failed");
       }
@@ -232,9 +264,11 @@ export default function RegisterInstituteForm() {
                 <div className="mt-2">
                   <input
                     type="text"
-                    disabled
+                    required
+                    placeholder="Enter Institute Name"
                     value={formData.name}
-                    className="block w-full rounded-md border-0 py-2.5 px-3.5 text-neutral-600 bg-neutral-100 shadow-sm ring-1 ring-inset ring-neutral-200 sm:text-sm sm:leading-6 cursor-not-allowed"
+                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    className="block w-full rounded-md border-0 py-2 px-3 text-neutral-900 shadow-sm ring-1 ring-inset ring-neutral-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
                   />
                   <p className="mt-1 text-xs text-neutral-500">As per new guidelines, names are anonymized publicly.</p>
                 </div>
@@ -348,17 +382,19 @@ export default function RegisterInstituteForm() {
               <div className="sm:col-span-2 flex items-center justify-between p-4 border border-dashed border-neutral-300 rounded-lg">
                 <div className="flex items-center gap-4">
                   {ownerPhotoPreview && (
-                    <div className="h-12 w-12 rounded-full overflow-hidden border border-neutral-200 shrink-0">
+                    <button type="button" onClick={() => setPreviewModal({ isOpen: true, url: formData.ownerDetails.photoUrl || ownerPhotoPreview, name: 'Owner Photo', type: 'image', isOwnerPhoto: true, uploadCallback: (url) => setFormData({...formData, ownerDetails: {...formData.ownerDetails, photoUrl: url}}) })} className="h-12 w-12 rounded-full overflow-hidden border border-neutral-200 shrink-0 cursor-pointer hover:ring-2 hover:ring-indigo-500 transition-all">
                       <img src={ownerPhotoPreview} alt="Owner Preview" className="h-full w-full object-cover" />
-                    </div>
+                    </button>
                   )}
                   <div>
                     <h4 className="text-sm font-medium text-neutral-900">Owner Passport Photo</h4>
                     <p className="text-xs text-neutral-500 mt-1">Clear recent photograph max 2MB</p>
+                    {ocrStatus['ownerPhoto']?.status === 'scanning' && <p className="text-xs text-indigo-600 mt-1.5 flex items-center gap-1 animate-pulse"><Scan className="h-3 w-3" /> AI Scanning...</p>}
+                    {ocrStatus['ownerPhoto']?.status === 'verified' && <p className="text-xs text-emerald-600 mt-1.5 flex items-center gap-1"><ShieldCheck className="h-3 w-3" /> AI Verified</p>}
                   </div>
                 </div>
                 <label className="cursor-pointer px-4 py-2 bg-neutral-100 text-sm font-medium rounded-md hover:bg-neutral-200">
-                  <span>{formData.ownerDetails.photoUrl && formData.ownerDetails.photoUrl.startsWith('http') ? "Uploaded ✓" : formData.ownerDetails.photoUrl ? "Uploaded ✓" : "Upload Image"}</span>
+                  <span>{formData.ownerDetails.photoUrl && formData.ownerDetails.photoUrl.startsWith('http') ? "Change Image" : formData.ownerDetails.photoUrl ? "Change Image" : "Upload Image"}</span>
                   <input type="file" accept="image/*" className="hidden" onChange={(e) => 
                     handleFileUpload(e, (url) => setFormData({...formData, ownerDetails: {...formData.ownerDetails, photoUrl: url}}), true)
                   } />
@@ -483,53 +519,138 @@ export default function RegisterInstituteForm() {
               <div className="sm:col-span-2">
                 <h3 className="text-sm font-semibold text-neutral-900 mb-4">Mandatory Certificate Uploads</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <label className="flex items-center justify-between p-4 border border-dashed border-neutral-300 rounded-lg bg-neutral-50 hover:bg-neutral-100 transition-colors cursor-pointer">
-                    <span className="text-sm font-medium text-neutral-700">{formData.safetyCertificates[0].url.startsWith('/') ? "Fire Safety (Uploaded ✓)" : "Fire Safety Certificate (PDF)"}</span>
-                    <Upload className="h-4 w-4 text-neutral-500" />
-                    <input type="file" accept="application/pdf" className="hidden" onChange={(e) => handleFileUpload(e, (url) => {
-                        const updated = [...formData.safetyCertificates];
-                        updated[0].url = url;
-                        setFormData({...formData, safetyCertificates: updated});
-                    })}/>
-                  </label>
-                  <label className="flex items-center justify-between p-4 border border-dashed border-neutral-300 rounded-lg bg-neutral-50 hover:bg-neutral-100 transition-colors cursor-pointer">
-                    <span className="text-sm font-medium text-neutral-700">{formData.safetyCertificates[1].url.startsWith('/') ? "Building Safety (Uploaded ✓)" : "Building Safety Certificate (PDF)"}</span>
-                    <Upload className="h-4 w-4 text-neutral-500" />
-                    <input type="file" accept="application/pdf" className="hidden" onChange={(e) => handleFileUpload(e, (url) => {
-                        const updated = [...formData.safetyCertificates];
-                        updated[1].url = url;
-                        setFormData({...formData, safetyCertificates: updated});
-                    })}/>
-                  </label>
+                  <div className="p-4 border border-dashed border-neutral-300 rounded-lg bg-neutral-50 flex flex-col gap-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-neutral-700">Fire Safety Certificate (PDF)</span>
+                      {ocrStatus[formData.safetyCertificates[0].fileName]?.status === 'scanning' ? (
+                        <span className="flex items-center gap-1 text-xs font-semibold text-indigo-500 animate-pulse"><Scan className="h-3 w-3" /> Scanning</span>
+                      ) : ocrStatus[formData.safetyCertificates[0].fileName]?.status === 'verified' ? (
+                        <span className="flex items-center gap-1 text-xs font-semibold text-emerald-600"><ShieldCheck className="h-3 w-3" /> AI Verified</span>
+                      ) : (
+                        <Upload className="h-4 w-4 text-neutral-500" />
+                      )}
+                    </div>
+                    {formData.safetyCertificates[0].url && !formData.safetyCertificates[0].url.startsWith('mock_') ? (
+                      <div className="flex items-center justify-between mt-2 pt-2 border-t border-neutral-200">
+                        <button type="button" onClick={() => setPreviewModal({ isOpen: true, url: formData.safetyCertificates[0].url, name: formData.safetyCertificates[0].fileName || 'Fire Safety Certificate', type: 'pdf', uploadCallback: (url, file) => { const updated = [...formData.safetyCertificates]; updated[0].url = url; updated[0].fileName = file.name; setFormData({...formData, safetyCertificates: updated}); } })} className="text-xs text-indigo-600 hover:underline truncate max-w-[150px] flex items-center gap-1 text-left">
+                          <Eye className="h-3 w-3 shrink-0" /> {formData.safetyCertificates[0].fileName || 'Uploaded File'}
+                        </button>
+                        <label className="cursor-pointer text-xs font-medium text-emerald-600 hover:text-emerald-700 bg-emerald-50 px-2 py-1 rounded">
+                          Change File
+                          <input type="file" accept="application/pdf" className="hidden" onChange={(e) => handleFileUpload(e, (url, file) => {
+                              const updated = [...formData.safetyCertificates];
+                              updated[0].url = url;
+                              updated[0].fileName = file.name;
+                              setFormData({...formData, safetyCertificates: updated});
+                          })}/>
+                        </label>
+                      </div>
+                    ) : (
+                      <label className="cursor-pointer w-full mt-2 text-center text-xs font-medium bg-white border border-neutral-200 py-1.5 rounded hover:bg-neutral-50 transition-colors">
+                        Upload File
+                        <input type="file" accept="application/pdf" className="hidden" onChange={(e) => handleFileUpload(e, (url, file) => {
+                            const updated = [...formData.safetyCertificates];
+                            updated[0].url = url;
+                            updated[0].fileName = file.name;
+                            setFormData({...formData, safetyCertificates: updated});
+                        })}/>
+                      </label>
+                    )}
+                  </div>
+                  
+                  <div className="p-4 border border-dashed border-neutral-300 rounded-lg bg-neutral-50 flex flex-col gap-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-neutral-700">Building Safety Certificate (PDF)</span>
+                      {ocrStatus[formData.safetyCertificates[1].fileName]?.status === 'scanning' ? (
+                        <span className="flex items-center gap-1 text-xs font-semibold text-indigo-500 animate-pulse"><Scan className="h-3 w-3" /> Scanning</span>
+                      ) : ocrStatus[formData.safetyCertificates[1].fileName]?.status === 'verified' ? (
+                        <span className="flex items-center gap-1 text-xs font-semibold text-emerald-600"><ShieldCheck className="h-3 w-3" /> AI Verified</span>
+                      ) : (
+                        <Upload className="h-4 w-4 text-neutral-500" />
+                      )}
+                    </div>
+                    {formData.safetyCertificates[1].url && !formData.safetyCertificates[1].url.startsWith('mock_') ? (
+                      <div className="flex items-center justify-between mt-2 pt-2 border-t border-neutral-200">
+                        <button type="button" onClick={() => setPreviewModal({ isOpen: true, url: formData.safetyCertificates[1].url, name: formData.safetyCertificates[1].fileName || 'Building Safety Certificate', type: 'pdf', uploadCallback: (url, file) => { const updated = [...formData.safetyCertificates]; updated[1].url = url; updated[1].fileName = file.name; setFormData({...formData, safetyCertificates: updated}); } })} className="text-xs text-indigo-600 hover:underline truncate max-w-[150px] flex items-center gap-1 text-left">
+                          <Eye className="h-3 w-3 shrink-0" /> {formData.safetyCertificates[1].fileName || 'Uploaded File'}
+                        </button>
+                        <label className="cursor-pointer text-xs font-medium text-emerald-600 hover:text-emerald-700 bg-emerald-50 px-2 py-1 rounded">
+                          Change File
+                          <input type="file" accept="application/pdf" className="hidden" onChange={(e) => handleFileUpload(e, (url, file) => {
+                              const updated = [...formData.safetyCertificates];
+                              updated[1].url = url;
+                              updated[1].fileName = file.name;
+                              setFormData({...formData, safetyCertificates: updated});
+                          })}/>
+                        </label>
+                      </div>
+                    ) : (
+                      <label className="cursor-pointer w-full mt-2 text-center text-xs font-medium bg-white border border-neutral-200 py-1.5 rounded hover:bg-neutral-50 transition-colors">
+                        Upload File
+                        <input type="file" accept="application/pdf" className="hidden" onChange={(e) => handleFileUpload(e, (url, file) => {
+                            const updated = [...formData.safetyCertificates];
+                            updated[1].url = url;
+                            updated[1].fileName = file.name;
+                            setFormData({...formData, safetyCertificates: updated});
+                        })}/>
+                      </label>
+                    )}
+                  </div>
                 </div>
               </div>
 
               <div className="sm:col-span-2">
                 <h3 className="text-sm font-semibold text-neutral-900 mb-4">Mandatory Facilities</h3>
-                <div className="grid grid-cols-2 gap-4 border border-neutral-200 rounded-lg p-5 bg-white">
-                  {['First Aid', 'CCTV', 'Ventilation', 'Separate Toilets', 'Emergency Exits'].map((facility, i) => {
-                    const keys = ['firstAid', 'cctvInstalled', 'ventilation', 'separateToilets', 'emergencyExits'] as const;
-                    const key = keys[i];
-                    return (
-                      <div key={key} className="flex items-center justify-between">
-                        <label className="flex items-center gap-3 text-sm text-neutral-700 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            className="h-4 w-4 rounded border-neutral-300 text-indigo-600 focus:ring-indigo-600"
-                            checked={formData.facilities[key]}
-                            onChange={(e) => setFormData({...formData, facilities: {...formData.facilities, [key]: e.target.checked}})}
-                          />
-                          {facility} Required
-                        </label>
-                        <label className="cursor-pointer text-xs text-indigo-600 hover:text-indigo-800 underline">
-                          Add Photo
-                          <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, (url) => {
-                            setFormData({...formData, facilities: {...formData.facilities, facilityPhotos: [...formData.facilities.facilityPhotos, url]}});
-                          })}/>
-                        </label>
+                <div className="flex flex-col gap-4 border border-neutral-200 rounded-lg p-5 bg-white">
+                  <div className="grid grid-cols-2 gap-4">
+                    {['First Aid', 'CCTV', 'Ventilation', 'Separate Toilets', 'Emergency Exits'].map((facility, i) => {
+                      const keys = ['firstAid', 'cctvInstalled', 'ventilation', 'separateToilets', 'emergencyExits'] as const;
+                      const key = keys[i];
+                      return (
+                        <div key={key} className="flex items-center justify-between">
+                          <label className="flex items-center gap-3 text-sm text-neutral-700 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              className="h-4 w-4 rounded border-neutral-300 text-indigo-600 focus:ring-indigo-600"
+                              checked={formData.facilities[key]}
+                              onChange={(e) => setFormData({...formData, facilities: {...formData.facilities, [key]: e.target.checked}})}
+                            />
+                            {facility} Required
+                          </label>
+                          <label className="cursor-pointer text-xs text-indigo-600 bg-indigo-50 px-2 py-1 rounded hover:bg-indigo-100 transition-colors border border-indigo-100">
+                            + Add Photo
+                            <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, (url) => {
+                              setFormData({...formData, facilities: {...formData.facilities, facilityPhotos: [...formData.facilities.facilityPhotos, url]}});
+                            })}/>
+                          </label>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {formData.facilities.facilityPhotos.length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-neutral-200">
+                      <h4 className="text-xs font-semibold text-neutral-500 uppercase mb-3">Uploaded Facility Photos</h4>
+                      <div className="flex flex-wrap gap-3">
+                        {formData.facilities.facilityPhotos.map((url, index) => (
+                          <div key={index} className="relative group w-20 h-20 rounded-md border border-neutral-200 overflow-hidden bg-neutral-50 shrink-0">
+                            <img src={url} alt={`Facility photo ${index + 1}`} className="w-full h-full object-cover cursor-pointer hover:opacity-80 transition-opacity" onClick={() => setPreviewModal({ isOpen: true, url, name: `Facility Photo ${index + 1}`, type: 'image', uploadCallback: (newUrl) => { const updated = [...formData.facilities.facilityPhotos]; updated[index] = newUrl; setFormData({...formData, facilities: {...formData.facilities, facilityPhotos: updated}}); } })} />
+                            <button 
+                              type="button" 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const updated = [...formData.facilities.facilityPhotos];
+                                updated.splice(index, 1);
+                                setFormData({...formData, facilities: {...formData.facilities, facilityPhotos: updated}});
+                              }}
+                              className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <span className="bg-red-500 text-white text-xs px-2 py-1 rounded font-medium shadow-sm border border-red-400">Remove</span>
+                            </button>
+                          </div>
+                        ))}
                       </div>
-                    );
-                  })}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -637,6 +758,49 @@ export default function RegisterInstituteForm() {
         </motion.div>
       )}
 
+      {/* Document Preview Modal */}
+      {previewModal && previewModal.isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-xl shadow-2xl overflow-hidden w-full max-w-4xl max-h-[90vh] flex flex-col"
+          >
+            <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-200 bg-neutral-50 shrink-0">
+              <h3 className="text-lg font-semibold text-neutral-900 truncate pr-4">{previewModal.name}</h3>
+              <button type="button" onClick={() => setPreviewModal(null)} className="p-1 rounded-md text-neutral-500 hover:bg-neutral-200 hover:text-neutral-900 transition-colors">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-auto p-6 bg-neutral-100 flex items-center justify-center min-h-[50vh]">
+              {previewModal.type === 'pdf' ? (
+                <iframe src={previewModal.url} className="w-full h-full min-h-[60vh] rounded border border-neutral-300 bg-white" title={previewModal.name} />
+              ) : (
+                <img src={previewModal.url} alt={previewModal.name} className="max-w-full max-h-[70vh] object-contain rounded shadow-sm" />
+              )}
+            </div>
+
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-neutral-200 bg-white shrink-0">
+              <button type="button" onClick={() => setPreviewModal(null)} className="px-5 py-2 text-sm font-medium text-neutral-700 bg-neutral-100 hover:bg-neutral-200 rounded-md transition-colors">
+                Looks Good
+              </button>
+              {previewModal.uploadCallback && (
+                <label className="cursor-pointer px-5 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-md transition-colors shadow-sm flex items-center gap-2">
+                  <Upload className="h-4 w-4" />
+                  Change Document
+                  <input type="file" accept={previewModal.type === 'pdf' ? "application/pdf" : "image/*"} className="hidden" onChange={(e) => {
+                    if (previewModal.uploadCallback) {
+                      handleFileUpload(e, previewModal.uploadCallback, previewModal.isOwnerPhoto);
+                      setPreviewModal(null);
+                    }
+                  }} />
+                </label>
+              )}
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }

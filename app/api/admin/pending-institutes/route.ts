@@ -86,7 +86,12 @@ export async function PUT(req: Request) {
       console.log(`[Mock SMS] Sent to ${ownerMobile}: Your EduShield registration is approved. ID: ${institute.instituteId}, PASS: ${plainPassword}`);
     }
 
-    return NextResponse.json({ success: true, message: 'Institute approved and credentials dispatched.' });
+    const isMock = !process.env.EMAIL_USER || !process.env.EMAIL_PASS;
+    return NextResponse.json({ 
+      success: true, 
+      message: isMock ? `Approved! (Mock Email ID: ${institute.instituteId} | Pass: ${plainPassword})` : 'Institute approved and credentials dispatched.',
+      credentials: isMock ? { id: institute.instituteId, pass: plainPassword } : undefined
+    });
 
   } catch (error) {
     console.error('Approval/Rejection error:', error);

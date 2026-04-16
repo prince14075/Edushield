@@ -86,9 +86,14 @@ function HomePage() {
             <Shield className="h-6 w-6 text-blue-600" />
             <span className="text-xl font-bold tracking-tight text-neutral-900">EduSheild</span>
           </div>
-          <nav className="hidden gap-6 md:flex">
+          <nav className="hidden gap-6 md:flex items-center">
+            <Link href="/directory" className="text-sm font-medium text-emerald-600 hover:text-emerald-700 transition-colors flex items-center gap-1">
+              Search by Pincode
+            </Link>
+            <Link href="/district-admin/dashboard" className="text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
+              Admin Area
+            </Link>
             <Link href="#features" className="text-sm font-medium text-neutral-600 hover:text-blue-600 transition-colors">Features</Link>
-            <Link href="#guidelines" className="text-sm font-medium text-neutral-600 hover:text-blue-600 transition-colors">Guidelines</Link>
           </nav>
           <div className="flex items-center gap-3">
             <Link 
@@ -123,6 +128,12 @@ function HomePage() {
               >
                 Register Institute
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+              <Link 
+                href="/directory" 
+                className="group flex h-12 w-full items-center justify-center gap-2 rounded-full bg-emerald-600 px-8 font-medium text-white transition-all hover:bg-emerald-700 hover:shadow-lg sm:w-auto"
+              >
+                Search Institutes by Pincode
               </Link>
               <Link 
                 href="/complaint" 
@@ -168,9 +179,20 @@ function HomePage() {
                 <p className="text-neutral-600 mb-6 font-medium text-sm">
                   Monitor all registered institutes, approve registrations, review AI flagged risks, and handle complaints.
                 </p>
-                <Link href="/login" className="inline-flex items-center text-sm font-semibold text-indigo-600 hover:text-indigo-700">
-                  Enter Portal <ArrowRight className="ml-1 h-4 w-4" />
-                </Link>
+                <div className="flex flex-col gap-3">
+                  <Link href="/login" className="inline-flex items-center text-sm font-semibold text-indigo-600 hover:text-indigo-700">
+                    Enter Portal <ArrowRight className="ml-1 h-4 w-4" />
+                  </Link>
+                  <div className="pt-3 border-t border-indigo-50 flex flex-col gap-2">
+                    <span className="text-xs text-indigo-400 font-semibold uppercase tracking-wider">Direct Testing Links</span>
+                    <Link href="/admin/dashboard" className="inline-flex items-center text-xs font-medium text-indigo-500 hover:text-indigo-700 bg-indigo-50/50 px-2 py-1.5 rounded-md hover:bg-indigo-100 transition-colors">
+                      Platform Admin Dashboard
+                    </Link>
+                    <Link href="/district-admin/dashboard" className="inline-flex items-center text-xs font-medium text-indigo-500 hover:text-indigo-700 bg-indigo-50/50 px-2 py-1.5 rounded-md hover:bg-indigo-100 transition-colors">
+                      District Admin Dashboard
+                    </Link>
+                  </div>
+                </div>
               </div>
 
               {/* Public Portal */}
@@ -182,7 +204,7 @@ function HomePage() {
                 <p className="text-neutral-600 mb-6 font-medium text-sm">
                   Search for verified institutes, check safety ratings, and securely submit violations or complaints.
                 </p>
-                <Link href="/public" className="inline-flex items-center text-sm font-semibold text-emerald-600 hover:text-emerald-700">
+                <Link href="/directory" className="inline-flex items-center text-sm font-semibold text-emerald-600 hover:text-emerald-700">
                   View Directory <ArrowRight className="ml-1 h-4 w-4" />
                 </Link>
               </div>

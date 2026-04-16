@@ -51,9 +51,11 @@ export async function POST(req: Request) {
       console.log(`[SMS Mock] Sent OTP ${otp} to ${identifier}`);
     }
 
+    const isMock = !process.env.EMAIL_USER || !process.env.EMAIL_PASS;
     return NextResponse.json({ 
       success: true, 
-      message: "Verification code sent successfully" 
+      message: isMock ? `Mock Dev OTP: ${otp}` : "Verification code sent successfully",
+      otp: isMock ? otp : undefined
     });
 
   } catch (error) {
