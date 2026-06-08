@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Institute Settings - Institute Portal</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+  <div class="dashboard-layout">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">
+          <i data-lucide="graduation-cap" style="color: var(--color-primary); width: 1.5rem; height: 1.5rem;"></i>
+          <span>Institute Portal</span>
+        </div>
+      </div>
+      
+      <nav class="sidebar-menu">
+        <a href="/institute/dashboard" class="sidebar-btn">
+          <i data-lucide="building-2" class="sidebar-icon"></i>
+          Dashboard
+        </a>
+        <a href="/institute/students" class="sidebar-btn">
+          <i data-lucide="users" class="sidebar-icon"></i>
+          Students
+        </a>
+        <a href="/institute/compliance" class="sidebar-btn">
+          <i data-lucide="upload-cloud" class="sidebar-icon"></i>
+          Compliance & Docs
+        </a>
+        <a href="/institute/settings" class="sidebar-btn active">
+          <i data-lucide="settings" class="sidebar-icon"></i>
+          Settings
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-avatar">I</div>
+          <div class="sidebar-user-details">
+            <span class="sidebar-user-name">Loading...</span>
+            <span class="sidebar-user-role">ID: INS-XXXX</span>
+          </div>
+        </div>
+        <button class="btn btn-secondary sign-out-btn" style="width: 100%; border-radius: var(--radius-sm); font-size: 0.8rem; padding: 0.5rem; justify-content: flex-start;">
+          <i data-lucide="log-out" style="width: 1.1rem; height: 1.1rem; color: var(--color-slate-400);"></i>
+          Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+      <header class="dashboard-header">
+        <h1 class="dashboard-header-title">Institute Settings</h1>
+        <div class="align-center" style="gap: 1.25rem;">
+          <span class="dashboard-badge success" id="status-badge">Verified</span>
+        </div>
+      </header>
+
+      <div class="dashboard-body" style="max-width: 60rem;">
+        
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; flex-wrap: wrap;">
+          
+          <!-- Navigation Sidebar inside page -->
+          <div class="panel" style="padding: 1rem; display: flex; flex-direction: column; gap: 0.5rem; align-self: flex-start;">
+            <button class="sidebar-btn active" style="width: 100%; text-align: left; border-radius: var(--radius-sm);">
+              <i data-lucide="building-2" style="width: 1.1rem; height: 1.1rem; margin-right: 0.5rem; display: inline-block; vertical-align: middle;"></i>
+              <span style="vertical-align: middle;">General Profile</span>
+            </button>
+            <button class="sidebar-btn" style="width: 100%; text-align: left; border-radius: var(--radius-sm); background: transparent; border: none; color: var(--color-slate-600);" disabled>
+              <i data-lucide="bell" style="width: 1.1rem; height: 1.1rem; margin-right: 0.5rem; display: inline-block; vertical-align: middle;"></i>
+              <span style="vertical-align: middle;">Notifications</span>
+            </button>
+            <button class="sidebar-btn" style="width: 100%; text-align: left; border-radius: var(--radius-sm); background: transparent; border: none; color: var(--color-slate-600);" disabled>
+              <i data-lucide="lock" style="width: 1.1rem; height: 1.1rem; margin-right: 0.5rem; display: inline-block; vertical-align: middle;"></i>
+              <span style="vertical-align: middle;">Security</span>
+            </button>
+          </div>
+
+          <!-- Settings Content Column -->
+          <div style="display: flex; flex-direction: column; gap: 2rem;">
+            
+            <!-- Panel 1: General Profile details -->
+            <div class="panel" style="padding: 0; overflow: hidden;">
+              <div class="panel-header" style="background-color: var(--color-slate-50); border-bottom: 1px solid var(--border-color); padding: 1.25rem 1.75rem; justify-content: space-between; align-center: center;">
+                <div>
+                  <h3 class="panel-title" style="font-size: 1rem;">General Profile</h3>
+                  <p style="font-size: 0.75rem; color: var(--color-slate-500); font-weight: 500;">Update your institute's public details and contact information.</p>
+                </div>
+                <div class="dashboard-badge success" id="profile-verify-badge" style="font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.2rem;">
+                  <i data-lucide="shield-check" style="width: 0.9rem; height: 0.9rem;"></i>
+                  <span>Verified</span>
+                </div>
+              </div>
+
+              <div class="p-6" style="padding: 1.75rem;">
+                <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                  
+                  <div class="form-group">
+                    <label class="form-label" for="inst-name">Coaching Center Name</label>
+                    <input type="text" id="inst-name" class="form-input" placeholder="Registered Coaching Center">
+                  </div>
+
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; flex-wrap: wrap;">
+                    <div class="form-group">
+                      <label class="form-label" for="inst-email">Contact Email</label>
+                      <input type="email" id="inst-email" class="form-input" style="background-color: var(--color-slate-50); color: var(--color-slate-500); cursor: not-allowed;" readonly>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label" for="inst-phone">Support Phone</label>
+                      <input type="tel" id="inst-phone" class="form-input" placeholder="+91 9876543210">
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel 2: Communication Preferences -->
+            <div class="panel" style="padding: 1.5rem;">
+              <h3 class="panel-title" style="margin-bottom: 0.25rem; font-size: 1rem;">Communication Preferences</h3>
+              <p style="font-size: 0.75rem; color: var(--color-slate-500); margin-bottom: 1.5rem;">Decide how you want to be notified about platform alerts.</p>
+              
+              <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                <label class="align-center" style="gap: 0.75rem; cursor: pointer; align-items: flex-start;">
+                  <input type="checkbox" checked style="margin-top: 0.2rem; width: 1.05rem; height: 1.05rem; accent-color: var(--color-primary);">
+                  <div style="font-size: 0.85rem; color: var(--color-slate-700); line-height: 1.4;">
+                    <strong>New Student Registrations</strong>
+                    <span style="display: block; font-size: 0.75rem; color: var(--color-slate-500);">Receive an email when a new student enrolls in your institute.</span>
+                  </div>
+                </label>
+
+                <label class="align-center" style="gap: 0.75rem; cursor: pointer; align-items: flex-start;">
+                  <input type="checkbox" checked disabled style="margin-top: 0.2rem; width: 1.05rem; height: 1.05rem; accent-color: var(--color-primary); opacity: 0.6;">
+                  <div style="font-size: 0.85rem; color: var(--color-slate-700); line-height: 1.4; opacity: 0.6;">
+                    <strong>Compliance & Safety Alerts</strong>
+                    <span style="display: block; font-size: 0.75rem; color: var(--color-slate-500);">Critical notifications from District Administration (Cannot be disabled).</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Save Changes button -->
+            <div style="display: flex; justify-content: flex-end;">
+              <button id="save-settings-btn" class="btn btn-primary" style="height: 2.75rem; padding: 0 2rem; gap: 0.5rem;">
+                <i data-lucide="save" style="width: 1.1rem; height: 1.1rem;"></i>
+                Save Changes
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/institute-settings.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

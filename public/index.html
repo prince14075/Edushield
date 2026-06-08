@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduShield - Ministry of Education Compliance Portal</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+  <!-- Splash Screen -->
+  <div id="splash-screen">
+    <div class="splash-logo-container">
+      <i data-lucide="shield-check" style="width: 4.5rem; height: 4.5rem;"></i>
+      <div class="splash-ping"></div>
+    </div>
+    <h1 class="splash-title">EduShield</h1>
+    <p class="splash-subtitle">MINISTRY OF EDUCATION COMPLIANCE PORTAL</p>
+  </div>
+
+  <!-- Main Website -->
+  <div id="main-content" style="opacity: 0; transition: opacity 0.5s ease-in-out;">
+    
+    <!-- Navbar -->
+    <header class="header-navbar">
+      <div class="container nav-container">
+        <a href="/" class="logo-link">
+          <i data-lucide="shield" class="logo-icon"></i>
+          <span>EduShield</span>
+        </a>
+        <nav class="nav-links">
+          <a href="/directory" class="nav-link emerald">Search by Pincode</a>
+          <a href="/login" class="nav-link indigo">Admin Area</a>
+          <a href="#features" class="nav-link">Features</a>
+        </nav>
+        <div class="align-center">
+          <a href="/login" class="btn btn-primary" style="padding: 0.5rem 1.5rem;">Sign In</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-bg-grad-1"></div>
+      <div class="hero-bg-grad-2"></div>
+      <div class="container">
+        <h1 class="hero-title">
+          Ensuring <span>Safety & Transparency</span><br>in Coaching Institutes
+        </h1>
+        <p class="hero-subtitle">
+          A centralized digital compliance monitoring system aligned with the Ministry of Education guidelines. Register your institute, track capacity, and ensure student safety.
+        </p>
+        
+        <div class="hero-actions">
+          <a href="/login" class="btn btn-primary">
+            Register Institute
+            <i data-lucide="arrow-right"></i>
+          </a>
+          <a href="/directory" class="btn btn-emerald" style="background-color: var(--color-emerald);">
+            Search Institutes by Pincode
+          </a>
+          <a href="/complaint" class="btn btn-secondary">
+            <i data-lucide="alert-triangle" style="color: var(--color-amber);"></i>
+            File a Complaint
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Portals Section -->
+    <section class="portals-section" id="features">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Platform Access</h2>
+          <p class="section-subtitle">Select your role to continue to the respective portal.</p>
+        </div>
+        
+        <div class="portals-grid">
+          <!-- Institute Card -->
+          <div class="portal-card institute">
+            <div class="portal-icon-wrapper">
+              <i data-lucide="building-2" style="width: 1.75rem; height: 1.75rem;"></i>
+            </div>
+            <h3 class="portal-title">Institute Portal</h3>
+            <p class="portal-desc">
+              Register your coaching center, upload infrastructure AI verifications, and manage student capacity.
+            </p>
+            <a href="/login" class="portal-link">
+              Enter Portal <i data-lucide="arrow-right" style="margin-left: 0.25rem; width: 1rem; height: 1rem;"></i>
+            </a>
+          </div>
+
+          <!-- Authority Card -->
+          <div class="portal-card authority">
+            <div class="portal-icon-wrapper">
+              <i data-lucide="shield-check" style="width: 1.75rem; height: 1.75rem;"></i>
+            </div>
+            <h3 class="portal-title">Admin Authority</h3>
+            <p class="portal-desc">
+              Monitor all registered institutes, approve registrations, review AI flagged risks, and handle complaints.
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+              <a href="/login" class="portal-link">
+                Enter Portal <i data-lucide="arrow-right" style="margin-left: 0.25rem; width: 1rem; height: 1rem;"></i>
+              </a>
+              <div class="portal-testing-box">
+                <span class="testing-title">Direct Testing Links</span>
+                <a href="/admin/dashboard" class="testing-link">Platform Admin Dashboard</a>
+                <a href="/district-admin/dashboard" class="testing-link">District Admin Dashboard</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Public Card -->
+          <div class="portal-card public">
+            <div class="portal-icon-wrapper">
+              <i data-lucide="users" style="width: 1.75rem; height: 1.75rem;"></i>
+            </div>
+            <h3 class="portal-title">Students & Parents</h3>
+            <p class="portal-desc">
+              Search for verified institutes, check safety ratings, and securely submit violations or complaints.
+            </p>
+            <a href="/directory" class="portal-link">
+              View Directory <i data-lucide="arrow-right" style="margin-left: 0.25rem; width: 1rem; height: 1rem;"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer style="background-color: #fff; border-top: 1px solid var(--border-color); padding: 2.5rem 0;">
+      <div class="container" style="display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 1rem;">
+        <p style="font-size: 0.875rem; color: var(--color-slate-500); text-align: center;">
+          © 2026 EduShield. Enforcing the Ministry of Education Guidelines.
+        </p>
+        <div style="display: flex; gap: 1.5rem; font-size: 0.875rem; color: var(--color-slate-500);">
+          <a href="#" class="nav-link">Privacy Policy</a>
+          <a href="#" class="nav-link">Terms of Service</a>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    // Initialize icons
+    lucide.createIcons();
+
+    // Splash screen timer
+    document.addEventListener("DOMContentLoaded", () => {
+      const splash = document.getElementById("splash-screen");
+      const main = document.getElementById("main-content");
+      
+      if (sessionStorage.getItem("splashPlayed")) {
+        splash.style.display = "none";
+        main.style.opacity = "1";
+      } else {
+        setTimeout(() => {
+          splash.classList.add("fade-out");
+          main.style.opacity = "1";
+          
+          // Remove splash from DOM after animation completes
+          setTimeout(() => {
+            splash.style.display = "none";
+            sessionStorage.setItem("splashPlayed", "true");
+          }, 500);
+        }, 2500);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Institute Dashboard - EduShield</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+  <div class="dashboard-layout">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">
+          <i data-lucide="graduation-cap" style="color: var(--color-primary); width: 1.5rem; height: 1.5rem;"></i>
+          <span>Institute Portal</span>
+        </div>
+      </div>
+      
+      <nav class="sidebar-menu">
+        <a href="/institute/dashboard" class="sidebar-btn active">
+          <i data-lucide="building-2" class="sidebar-icon"></i>
+          Dashboard
+        </a>
+        <a href="/institute/students" class="sidebar-btn">
+          <i data-lucide="users" class="sidebar-icon"></i>
+          Students
+        </a>
+        <a href="/institute/compliance" class="sidebar-btn">
+          <i data-lucide="upload-cloud" class="sidebar-icon"></i>
+          Compliance & Docs
+        </a>
+        <a href="/institute/settings" class="sidebar-btn">
+          <i data-lucide="settings" class="sidebar-icon"></i>
+          Settings
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-avatar">I</div>
+          <div class="sidebar-user-details">
+            <span class="sidebar-user-name">Loading...</span>
+            <span class="sidebar-user-role">ID: INS-XXXX</span>
+          </div>
+        </div>
+        <button class="btn btn-secondary sign-out-btn" style="width: 100%; border-radius: var(--radius-sm); font-size: 0.8rem; padding: 0.5rem; justify-content: flex-start;">
+          <i data-lucide="log-out" style="width: 1.1rem; height: 1.1rem; color: var(--color-slate-400);"></i>
+          Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+      <header class="dashboard-header">
+        <h1 class="dashboard-header-title">Institute Overview</h1>
+        <div class="align-center" style="gap: 1.25rem;">
+          <span class="dashboard-badge success" id="status-badge">Verified</span>
+        </div>
+      </header>
+
+      <div class="dashboard-body" style="max-width: 68rem;">
+        
+        <div id="dashboard-loading" style="text-align: center; padding: 4rem 0;">
+          <div class="spinner" style="width: 2.5rem; height: 2.5rem; border-top-color: var(--color-primary); border-width: 4px; margin: 0 auto;"></div>
+          <p style="margin-top: 1rem; color: var(--color-slate-500);">Loading dashboard data...</p>
+        </div>
+
+        <div id="dashboard-view" style="display: none;" class="form-box">
+          <!-- Header title row -->
+          <div class="justify-between align-center" style="margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h2 class="form-title" style="font-size: 1.5rem;" id="welcome-title">Welcome Back</h2>
+              <p class="form-desc" style="font-size: 0.9rem;">Manage your capacity, students, and regulatory compliance.</p>
+            </div>
+            <a href="/institute/students/new" class="btn btn-primary" style="height: 2.5rem; border-radius: var(--radius-sm);">
+              <i data-lucide="users" style="width: 1.1rem; height: 1.1rem;"></i>
+              Enroll Student
+            </a>
+          </div>
+
+          <!-- Capacity Monitor Grid -->
+          <div class="detail-grid" style="margin-bottom: 2rem;">
+            
+            <!-- Seating capacity monitor card -->
+            <div class="panel" style="padding: 1.75rem; justify-content: space-between;">
+              <div>
+                <div class="justify-between align-center">
+                  <h3 class="panel-title">
+                    <i data-lucide="trending-up" style="width: 1.25rem; height: 1.25rem; color: var(--color-primary);"></i>
+                    Live Capacity Monitor
+                  </h3>
+                  <span class="dashboard-badge" id="capacity-status-badge">Compliant</span>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--color-slate-500); margin-top: 0.25rem;">Based on verified per-student sq. footage guidelines.</p>
+
+                <div class="capacity-meta">
+                  <div>
+                    <span class="capacity-number-large" id="current-enrolled-count">0</span>
+                    <span style="font-size: 1rem; color: var(--color-slate-500); font-weight: 600;" id="max-allowed-count">/ 0 students</span>
+                  </div>
+                  <span style="font-size: 0.875rem; color: var(--color-slate-500); font-weight: 600;" id="capacity-percent-text">0% filled</span>
+                </div>
+
+                <!-- Capacity bar -->
+                <div class="capacity-bar-wrapper">
+                  <div class="capacity-bar-fill" id="capacity-progress-bar"></div>
+                </div>
+
+                <!-- Alert panel warning message -->
+                <div class="alert-box" id="capacity-warning-alert" style="margin-top: 1.25rem; display: flex;">
+                  <i data-lucide="alert-triangle" style="width: 1.25rem; height: 1.25rem; flex-shrink: 0;"></i>
+                  <div style="font-size: 0.8rem;">
+                    <strong id="alert-header" style="display: block; margin-bottom: 0.15rem;">Safe: Within Approved Limit</strong>
+                    <span id="alert-body">Your institute's active enrollments are compliant with the 1 sq.m per student rule.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Profile Info card -->
+            <div class="panel" style="padding: 1.75rem;">
+              <div class="align-center" style="gap: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.25rem; margin-bottom: 1.25rem;">
+                <div class="overview-icon-box blue" style="border-radius: var(--radius-sm);">
+                  <i data-lucide="building-2" style="width: 1.5rem; height: 1.5rem;"></i>
+                </div>
+                <div>
+                  <h3 class="panel-title" id="inst-profile-name">Coaching Center</h3>
+                  <p style="font-size: 0.75rem; color: var(--color-slate-500); font-weight: 500;" id="inst-profile-id">ID: INS-XXXX</p>
+                </div>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 1.25rem; font-size: 0.85rem;">
+                <div class="align-center" style="gap: 0.75rem;">
+                  <i data-lucide="map-pin" style="color: var(--color-slate-400); width: 1.15rem; height: 1.15rem; flex-shrink: 0;"></i>
+                  <span id="inst-profile-address" style="color: var(--color-slate-600);">Address details loading...</span>
+                </div>
+                <div class="align-center" style="gap: 0.75rem;">
+                  <i data-lucide="shield-check" id="verify-status-icon" style="color: var(--color-emerald); width: 1.15rem; height: 1.15rem; flex-shrink: 0;"></i>
+                  <span style="color: var(--color-slate-600); font-weight: 600;">Verification Status: <strong id="verify-status-text" style="color: var(--color-emerald);">Verified</strong></span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Bottom double panels -->
+          <div style="display: grid; grid-template-cols: 1fr; gap: 2rem;" id="dashboard-details-row">
+            
+            <!-- Tasks checklists -->
+            <div class="panel">
+              <div class="panel-header" style="background-color: var(--color-slate-50);">
+                <h3 class="panel-title" style="font-size: 0.95rem;">
+                  <i data-lucide="file-check-2" style="width: 1.2rem; height: 1.2rem; color: hsl(243, 75%, 59%);"></i>
+                  Compliance Tasks
+                </h3>
+                <a href="/institute/compliance" class="table-link" style="font-size: 0.75rem;">Manage</a>
+              </div>
+              <div class="panel-body" style="padding: 1rem 1.5rem;">
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;" id="compliance-task-rows">
+                  <!-- Appended rows -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Recent Students -->
+            <div class="panel">
+              <div class="panel-header" style="background-color: var(--color-slate-50);">
+                <h3 class="panel-title" style="font-size: 0.95rem;">
+                  <i data-lucide="users" style="width: 1.2rem; height: 1.2rem; color: hsl(243, 75%, 59%);"></i>
+                  Recent Enrollments
+                </h3>
+                <a href="/institute/students" class="table-link" style="font-size: 0.75rem;">View All</a>
+              </div>
+              <div class="panel-body" style="display: flex; flex-direction: column; justify-content: space-between;">
+                <div style="display: flex; flex-direction: column; gap: 1rem;" id="recent-enrollments-box">
+                  <!-- Enrollments -->
+                </div>
+                <a href="/institute/students/new" class="btn btn-secondary" style="width: 100%; border-radius: var(--radius-sm); font-size: 0.8rem; margin-top: 1.5rem; justify-content: center; height: 2.25rem;">
+                  Register New Student
+                  <i data-lucide="arrow-right" style="width: 1rem; height: 1rem;"></i>
+                </a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/institute-dashboard.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

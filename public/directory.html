@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verified Institute Directory - EduShield</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .directory-hero {
+      background-color: hsl(243, 75%, 15%);
+      color: #fff;
+      padding: 5rem 1.5rem 6rem;
+      text-align: center;
+      position: relative;
+    }
+    .hero-back-link {
+      position: absolute;
+      top: 1.5rem;
+      left: 1.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: hsl(243, 75%, 80%);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .hero-back-link:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+    .directory-results-container {
+      max-width: 64rem;
+      margin: -2rem auto 4rem;
+      position: relative;
+      z-index: 20;
+      padding: 0 1.5rem;
+    }
+    .result-card {
+      background-color: #fff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+    .result-card:hover {
+      box-shadow: var(--shadow-md);
+    }
+    @media (min-width: 768px) {
+      .result-card {
+        flex-direction: row;
+      }
+    }
+    .result-safety-score-box {
+      background-color: var(--color-primary-light);
+      border: 1px solid hsl(224, 76%, 90%);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 16rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Search Hero Header -->
+  <div class="directory-hero">
+    <a href="/" class="hero-back-link">
+      &larr; Back to Platform Home
+    </a>
+    <div style="max-width: 42rem; margin: 0 auto;">
+      <h1 class="hero-title" style="color: #fff; font-size: 2.75rem; margin-bottom: 1rem;">Verified Institute Directory</h1>
+      <p class="hero-subtitle" style="color: hsl(243, 75%, 85%); font-size: 1.1rem; margin-bottom: 2rem;">
+        Search for officially approved coaching centers in your area. Review their safety compliance, seating capacity, and official records before admitting your child.
+      </p>
+
+      <form id="search-form" style="display: flex; flex-direction: column; gap: 0.75rem; max-width: 36rem; margin: 0 auto;">
+        <div style="position: relative; flex: 1; display: flex; flex-direction: column;">
+          <input type="text" id="pincode-input" placeholder="Enter 6-digit Pincode (e.g. 201301)" maxlength="6" required class="form-input" style="font-size: 1.15rem; height: 3.5rem; border-radius: var(--radius-md); padding-left: 3rem; border: none; box-shadow: var(--shadow-lg);">
+          <i data-lucide="map-pin" style="position: absolute; left: 1rem; top: 1.15rem; color: var(--color-primary); width: 1.5rem; height: 1.5rem;"></i>
+        </div>
+        <button type="submit" class="btn btn-emerald btn-submit" style="height: 3.5rem; border-radius: var(--radius-md); font-size: 1.15rem; font-weight: 700; width: 100%;">
+          <i data-lucide="search" style="width: 1.25rem; height: 1.25rem;"></i>
+          <span>Search</span>
+          <div class="spinner" id="search-spinner" style="display: none;"></div>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Results Area -->
+  <div class="directory-results-container">
+    <div id="loading-state" style="display: none; text-align: center; padding: 4rem 0;">
+      <div class="spinner" style="width: 2.5rem; height: 2.5rem; border-top-color: var(--color-primary); border-width: 4px; margin: 0 auto;"></div>
+      <p style="margin-top: 1rem; color: var(--color-slate-500); font-weight: 500;">Searching verified institutes...</p>
+    </div>
+
+    <div id="empty-state" class="panel" style="display: none; padding: 4rem; text-align: center; border-radius: var(--radius-lg);">
+      <i data-lucide="search" style="width: 3rem; height: 3rem; color: var(--color-slate-300); margin: 0 auto 1rem;"></i>
+      <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 0.5rem;">No Officially Verified Centers Found</h3>
+      <p style="color: var(--color-slate-500); max-width: 26rem; margin: 0 auto;">
+        There are currently no EduShield-approved coaching institutes actively registered in pincode <strong id="queried-pincode"></strong>.
+      </p>
+    </div>
+
+    <!-- Results list container -->
+    <div id="results-list"></div>
+
+    <!-- Help Banner -->
+    <div style="margin-top: 4rem; border-radius: var(--radius-lg); background-color: var(--color-primary-light); border: 1px solid hsl(224, 76%, 90%); padding: 2.5rem; display: flex; flex-direction: column; justify-content: space-between; align-items: center; gap: 1.5rem; overflow: hidden; position: relative;">
+      <div style="position: relative; z-index: 10;">
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--color-slate-900); margin-bottom: 0.5rem;">Can't find an institute?</h3>
+        <p style="color: var(--color-slate-600); max-width: 32rem; font-size: 0.95rem;">
+          If a coaching center is operating but not listed here, it is unregistered and operating illegally. Please report them immediately.
+        </p>
+      </div>
+      <a href="/complaint" class="btn btn-primary" style="position: relative; z-index: 10; height: 2.75rem; border-radius: var(--radius-sm); font-size: 0.875rem;">
+        <i data-lucide="alert-triangle" style="width: 1.1rem; height: 1.1rem; color: var(--color-amber);"></i>
+        Report Unregistered Center
+      </a>
+      <i data-lucide="shield-check" style="position: absolute; right: -2rem; bottom: -2rem; width: 12rem; height: 12rem; color: rgba(224, 231, 255, 0.5); z-index: 0; pointer-events: none;"></i>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/directory.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

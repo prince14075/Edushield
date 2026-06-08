@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Report a Violation - EduShield</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .evidence-dropzone {
+      margin-top: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed var(--color-slate-400);
+      border-radius: var(--radius-md);
+      padding: 2rem;
+      text-align: center;
+      background-color: var(--color-slate-50);
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    .evidence-dropzone:hover {
+      background-color: var(--color-primary-light);
+      border-color: var(--color-primary);
+    }
+    .anonymous-fade {
+      transition: var(--transition);
+    }
+    .anonymous-fade.disabled {
+      opacity: 0.4;
+      pointer-events: none;
+      filter: blur(1px);
+    }
+    .btn-group {
+      display: flex;
+      gap: 1rem;
+    }
+    .btn-group button {
+      flex: 1;
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border-color);
+      background-color: #fff;
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--color-slate-600);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .btn-group button.active {
+      background-color: var(--color-primary-light);
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header-navbar">
+    <div class="container nav-container" style="justify-content: flex-start; gap: 2rem;">
+      <a href="/" class="align-center" style="gap: 0.5rem; color: var(--color-slate-500); hover:color: var(--color-slate-900);">
+        <i data-lucide="arrow-left" style="width: 1rem; height: 1rem;"></i>
+        Back
+      </a>
+      <div class="align-center" style="gap: 0.5rem;">
+        <i data-lucide="shield" class="logo-icon" style="width: 1.75rem; height: 1.75rem;"></i>
+        <span style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800;">EduShield</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" style="max-width: 48rem; padding: 3rem 1.5rem;">
+
+    <!-- Success View -->
+    <div id="success-view" class="panel" style="display: none; padding: 3rem; text-align: center; border-radius: var(--radius-lg);">
+      <div class="inline-flex align-center justify-center h-16 w-16 rounded-full" style="background-color: var(--color-emerald-light); color: var(--color-emerald); margin: 0 auto 1.5rem;">
+        <i data-lucide="check-circle-2" style="width: 2rem; height: 2rem;"></i>
+      </div>
+      <h2 class="form-title" style="margin-bottom: 1rem;" id="success-header-text">Complaint Submitted Securely</h2>
+      <p class="form-desc" style="max-width: 28rem; margin: 0 auto 2rem;" id="success-body-text">
+        Your grievance has been securely logged and forwarded to the Ministry compliance authorities for immediate review. Your identity has been completely obfuscated.
+      </p>
+      
+      <div class="panel" style="background-color: var(--color-slate-50); border-radius: var(--radius-md); padding: 1rem; max-width: 16rem; margin: 0 auto 2rem;">
+        <p class="testing-title" style="margin-bottom: 0.25rem;">Tracking ID</p>
+        <p class="form-title" style="font-family: monospace; letter-spacing: 0.1em; font-size: 1.25rem; margin: 0;" id="tracking-id-text">COMP-XXXX</p>
+      </div>
+
+      <a href="/" class="btn btn-primary" style="padding: 0.65rem 2rem;">Return Home</a>
+    </div>
+
+    <!-- Form View -->
+    <div id="form-view">
+      <div class="section-header" style="text-align: left; margin-bottom: 2rem;">
+        <h1 class="form-title" style="font-size: 2.25rem; display: flex; align-items: center; gap: 0.75rem;">
+          <i data-lucide="alert-triangle" style="color: var(--color-amber); width: 2.25rem; height: 2.25rem;"></i>
+          Report a Violation
+        </h1>
+        <p class="form-desc" style="font-size: 1rem; margin-top: 0.5rem;">
+          Help maintain student safety. Report coaching centers that violate <a href="#" style="color: var(--color-primary); text-decoration: underline;">Ministry of Education</a> guidelines (overcrowding, unsafe facilities, unauthorized fees).
+        </p>
+      </div>
+
+      <div class="panel" style="border-radius: var(--radius-lg);">
+        <form id="complaint-form" style="padding: 2.5rem;" class="form-box">
+          
+          <!-- Type Toggle Selector -->
+          <div class="toggle-group" style="margin-bottom: 2rem;">
+            <button type="button" class="toggle-btn active" id="type-complaint">Submit a Complaint</button>
+            <button type="button" class="toggle-btn" id="type-suggestion">Make a Suggestion</button>
+          </div>
+
+          <!-- Section 1: Incident Context -->
+          <div class="form-box">
+            <h3 class="form-label" style="font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 0.5rem;">1. Incident Context</h3>
+            
+            <div class="form-field">
+              <label for="instituteNameText" class="form-label">Institute Name & Location *</label>
+              <input type="text" id="instituteNameText" required placeholder="e.g. Apex Classes, Sector 14, Gurugram" class="form-input">
+            </div>
+
+            <div class="form-field">
+              <label for="category" class="form-label">Primary Guideline Violated *</label>
+              <select id="category" required class="form-select">
+                <option value="" disabled selected>Select the violation category...</option>
+                <option value="OVERCROWDING">Severe Overcrowding in Classroom</option>
+                <option value="FIRE">Lack of Fire Exits / Safety</option>
+                <option value="WATER">Poor Water Supply Facility</option>
+                <option value="FACILITIES">Poor General Facilities</option>
+                <option value="SAFETY">Other Safety Concerns</option>
+                <option value="OTHER">Other Guideline Breach</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="description" class="form-label">Detailed Description *</label>
+              <textarea id="description" required rows="4" placeholder="Please explicitly describe the situation, dates, and what you observed..." class="form-textarea" style="resize: vertical;"></textarea>
+            </div>
+
+            <div class="form-field">
+              <label class="form-label">Evidence Upload (Optional)</label>
+              <div class="evidence-dropzone" id="evidence-box">
+                <i data-lucide="image" style="width: 2rem; height: 2rem; color: var(--color-slate-400); margin-bottom: 0.5rem;"></i>
+                <span style="font-size: 0.875rem; font-weight: 600; color: var(--color-primary);">Upload photos or audio</span>
+                <span style="font-size: 0.75rem; color: var(--color-slate-500); margin-top: 0.25rem;">PNG, JPG, MP4 up to 10MB</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: Complainant Details -->
+          <div class="form-box" style="margin-top: 1.5rem;">
+            <div class="justify-between align-center" style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 0.5rem;">
+              <h3 class="form-label" style="font-size: 1.1rem; margin: 0;">2. Your Details</h3>
+              <div class="form-checkbox-wrapper">
+                <input type="checkbox" id="isAnonymous" class="form-checkbox">
+                <label for="isAnonymous" class="form-checkbox-label" style="font-weight: 600;">Submit Anonymously</label>
+              </div>
+            </div>
+
+            <div id="complainant-fields" class="anonymous-fade form-box">
+              <div class="form-field">
+                <label class="form-label">Complainant Type</label>
+                <div class="btn-group" id="complainant-type-group">
+                  <button type="button" class="active" data-type="STUDENT">Student</button>
+                  <button type="button" data-type="PARENT">Parent</button>
+                  <button type="button" data-type="PUBLIC">Public</button>
+                </div>
+              </div>
+
+              <div class="grid-cols-2">
+                <div class="form-field">
+                  <label for="name" class="form-label">Full Name *</label>
+                  <input type="text" id="name" required class="form-input">
+                </div>
+                <div class="form-field">
+                  <label for="contact" class="form-label">Contact (Email/Phone) *</label>
+                  <input type="text" id="contact" required class="form-input">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit section -->
+          <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+            <div class="alert-box alert-warning" style="margin-bottom: 1.5rem; background-color: var(--color-primary-light); color: var(--color-primary); border-color: var(--color-primary-light);">
+              <i data-lucide="shield" style="width: 1.25rem; height: 1.25rem; flex-shrink: 0; color: var(--color-primary);"></i>
+              <p>All complaints are treated with strict confidentiality. Retaliation by coaching institutes against complainants is a severe violation of the 2024 regulations.</p>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-submit" style="width: 100%; height: 3rem; border-radius: var(--radius-md);">
+              <span id="btn-text">Submit Official Complaint</span>
+              <div class="spinner" id="btn-spinner" style="display: none;"></div>
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/complaint.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

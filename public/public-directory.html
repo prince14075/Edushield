@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verified Institutes - Public Directory</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .grid-container {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-cols: 1fr;
+    }
+    @media (min-width: 640px) {
+      .grid-container { grid-template-cols: repeat(2, 1fr); }
+    }
+    @media (min-width: 1024px) {
+      .grid-container { grid-template-cols: repeat(3, 1fr); }
+    }
+    .hover-overlay {
+      position: absolute;
+      inset: auto 0 0 0;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(4px);
+      border-top: 1px solid var(--border-color);
+      transform: translateY(100%);
+      transition: var(--transition);
+      display: flex;
+      justify-content: center;
+    }
+    .portal-card:hover .hover-overlay {
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header-navbar">
+    <div class="container nav-container" style="justify-content: flex-start; gap: 2rem;">
+      <a href="/" class="align-center" style="gap: 0.5rem; color: var(--color-slate-500); hover:color: var(--color-slate-900);">
+        <i data-lucide="arrow-left" style="width: 1rem; height: 1rem;"></i>
+        Back
+      </a>
+      <div class="align-center" style="gap: 0.5rem; flex: 1;">
+        <i data-lucide="shield-check" class="logo-icon" style="width: 1.75rem; height: 1.75rem; color: var(--color-emerald);"></i>
+        <span style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800;">Public Directory</span>
+      </div>
+      <div style="position: relative; width: 18rem;">
+        <input type="text" id="directory-search" placeholder="Search coaching centers..." class="form-input" style="height: 2.25rem; padding-left: 2.25rem; border-radius: var(--radius-full);">
+        <i data-lucide="search" style="position: absolute; left: 0.75rem; top: 0.55rem; width: 1rem; height: 1rem; color: var(--color-slate-400);"></i>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" style="padding: 3rem 1.5rem;">
+    
+    <div class="justify-between align-center" style="margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h1 class="form-title" style="font-size: 2.25rem;">Verified Institutes</h1>
+        <p class="form-desc" style="font-size: 1rem; margin-top: 0.25rem;">
+          Browse coaching centers that have been verified by the Ministry of Education for safety, infrastructure, and fair practices.
+        </p>
+      </div>
+      <button class="btn btn-secondary" style="border-radius: var(--radius-sm); font-size: 0.8rem;">
+        <i data-lucide="filter" style="width: 1rem; height: 1rem;"></i>
+        Filters
+      </button>
+    </div>
+
+    <!-- Loading, Empty, and Results State -->
+    <div id="dir-loading" style="text-align: center; padding: 4rem 0;">
+      <div class="spinner" style="width: 2.5rem; height: 2.5rem; border-top-color: var(--color-emerald); border-width: 4px; margin: 0 auto;"></div>
+      <p style="margin-top: 1rem; color: var(--color-slate-500);">Loading verified institutes...</p>
+    </div>
+
+    <div id="dir-empty" class="panel" style="display: none; padding: 4rem; text-align: center; border-radius: var(--radius-lg);">
+      <i data-lucide="search" style="width: 3rem; height: 3rem; color: var(--color-slate-300); margin: 0 auto 1rem;"></i>
+      <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 0.5rem;">No institutes found</h3>
+      <p style="color: var(--color-slate-500); max-width: 26rem; margin: 0 auto;">
+        No registered coaching centers match your search criteria. Try a different search term or check back later.
+      </p>
+    </div>
+
+    <div class="grid-container" id="dir-results-grid"></div>
+
+    <!-- Help Banner -->
+    <div style="margin-top: 5rem; border-radius: var(--radius-lg); background-color: var(--color-primary-light); border: 1px solid hsl(224, 76%, 90%); padding: 2.5rem; display: flex; flex-direction: column; justify-content: space-between; align-items: center; gap: 1.5rem; overflow: hidden; position: relative;">
+      <div style="position: relative; z-index: 10;">
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--color-slate-900); mb-2">Can't find an institute?</h3>
+        <p style="color: var(--color-slate-600); max-width: 32rem; font-size: 0.95rem;">
+          If a coaching center is operating but not listed here, it is unregistered and operating illegally. Please report them immediately.
+        </p>
+      </div>
+      <a href="/complaint" class="btn btn-primary" style="position: relative; z-index: 10; height: 2.75rem; border-radius: var(--radius-sm); font-size: 0.875rem;">
+        <i data-lucide="alert-triangle" style="width: 1.1rem; height: 1.1rem; color: var(--color-amber);"></i>
+        Report Unregistered Center
+      </a>
+      <i data-lucide="shield-check" style="position: absolute; right: -2rem; bottom: -2rem; width: 12rem; height: 12rem; color: rgba(224, 231, 255, 0.5); z-index: 0; pointer-events: none;"></i>
+    </div>
+
+  </main>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/public-directory.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

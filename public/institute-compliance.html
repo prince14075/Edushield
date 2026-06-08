@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compliance & Documents - Institute Portal</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+  <div class="dashboard-layout">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">
+          <i data-lucide="graduation-cap" style="color: var(--color-primary); width: 1.5rem; height: 1.5rem;"></i>
+          <span>Institute Portal</span>
+        </div>
+      </div>
+      
+      <nav class="sidebar-menu">
+        <a href="/institute/dashboard" class="sidebar-btn">
+          <i data-lucide="building-2" class="sidebar-icon"></i>
+          Dashboard
+        </a>
+        <a href="/institute/students" class="sidebar-btn">
+          <i data-lucide="users" class="sidebar-icon"></i>
+          Students
+        </a>
+        <a href="/institute/compliance" class="sidebar-btn active">
+          <i data-lucide="upload-cloud" class="sidebar-icon"></i>
+          Compliance & Docs
+        </a>
+        <a href="/institute/settings" class="sidebar-btn">
+          <i data-lucide="settings" class="sidebar-icon"></i>
+          Settings
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-avatar">I</div>
+          <div class="sidebar-user-details">
+            <span class="sidebar-user-name">Loading...</span>
+            <span class="sidebar-user-role">ID: INS-XXXX</span>
+          </div>
+        </div>
+        <button class="btn btn-secondary sign-out-btn" style="width: 100%; border-radius: var(--radius-sm); font-size: 0.8rem; padding: 0.5rem; justify-content: flex-start;">
+          <i data-lucide="log-out" style="width: 1.1rem; height: 1.1rem; color: var(--color-slate-400);"></i>
+          Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+      <header class="dashboard-header">
+        <h1 class="dashboard-header-title">Compliance & Documents</h1>
+        <div class="align-center" style="gap: 1.25rem;">
+          <span class="dashboard-badge success" id="status-badge">Verified</span>
+        </div>
+      </header>
+
+      <div class="dashboard-body" style="max-width: 68rem;">
+        
+        <!-- Status Banner -->
+        <div id="compliance-banner" class="alert-box success" style="margin-bottom: 2rem; display: none; padding: 1.25rem; align-items: flex-start; gap: 1rem;">
+          <i id="banner-icon" data-lucide="shield-check" style="width: 1.5rem; height: 1.5rem; flex-shrink: 0; margin-top: 0.1rem;"></i>
+          <div>
+            <h3 id="banner-title" style="font-size: 1rem; font-weight: 750; margin-bottom: 0.25rem;">System Status: SAFE</h3>
+            <p id="banner-desc" style="font-size: 0.85rem; line-height: 1.4;">
+              Your institute is fully compliant with all governing regulations. Keep your documents updated!
+            </p>
+          </div>
+        </div>
+
+        <div id="compliance-loading" style="text-align: center; padding: 4rem 0;">
+          <div class="spinner" style="width: 2.5rem; height: 2.5rem; border-top-color: var(--color-primary); border-width: 4px; margin: 0 auto;"></div>
+          <p style="margin-top: 1rem; color: var(--color-slate-500);">Loading compliance data...</p>
+        </div>
+
+        <div id="compliance-view" style="display: none; display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; flex-wrap: wrap;">
+          
+          <!-- Column 1: Safety NOCs Table -->
+          <div class="panel" style="padding: 0; overflow: hidden; align-self: flex-start;">
+            <div class="panel-header" style="background-color: var(--color-slate-50); border-bottom: 1px solid var(--border-color); padding: 1.25rem 1.5rem;">
+              <h3 class="panel-title" style="font-size: 1rem;">
+                <i data-lucide="file-check-2" style="width: 1.2rem; height: 1.2rem; color: var(--color-primary);"></i>
+                Safety Certificates
+              </h3>
+            </div>
+            
+            <div class="table-wrapper">
+              <table class="table-element">
+                <thead>
+                  <tr>
+                    <th>Document Type</th>
+                    <th>Status</th>
+                    <th style="text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="certificates-table-body">
+                  <!-- JS appends Fire, Building, Other rows here -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Hidden File Input for Certificate Upload -->
+            <input type="file" id="noc-file-input" style="display: none;" accept="image/*,application/pdf">
+          </div>
+
+          <!-- Column 2: Mandatory Undertakings Checklist -->
+          <div class="panel" style="padding: 1.5rem; align-self: flex-start;">
+            <h3 class="panel-title" style="margin-bottom: 0.25rem; font-size: 1rem;">Mandatory Undertakings</h3>
+            <p style="font-size: 0.75rem; color: var(--color-slate-500); margin-bottom: 1.5rem;">Regulatory agreements as per guidelines.</p>
+
+            <form id="undertakings-form" style="display: flex; flex-direction: column; gap: 1rem;">
+              
+              <label class="align-center" style="gap: 0.75rem; cursor: pointer; align-items: flex-start;">
+                <input type="checkbox" id="undertake-noUnder16" style="margin-top: 0.2rem; width: 1.05rem; height: 1.05rem; accent-color: var(--color-primary);">
+                <div style="font-size: 0.85rem; color: var(--color-slate-700); line-height: 1.4;">
+                  <strong>No students under 16 yrs</strong>
+                  <span style="display: block; font-size: 0.75rem; color: var(--color-slate-500);">Coaching classes cannot enroll secondary school age students.</span>
+                </div>
+              </label>
+
+              <label class="align-center" style="gap: 0.75rem; cursor: pointer; align-items: flex-start;">
+                <input type="checkbox" id="undertake-noSchoolHours" style="margin-top: 0.2rem; width: 1.05rem; height: 1.05rem; accent-color: var(--color-primary);">
+                <div style="font-size: 0.85rem; color: var(--color-slate-700); line-height: 1.4;">
+                  <strong>No school hours clash</strong>
+                  <span style="display: block; font-size: 0.75rem; color: var(--color-slate-500);">Class timings must not conflict with school attendance.</span>
+                </div>
+              </label>
+
+              <label class="align-center" style="gap: 0.75rem; cursor: pointer; align-items: flex-start;">
+                <input type="checkbox" id="undertake-graduateTutors" style="margin-top: 0.2rem; width: 1.05rem; height: 1.05rem; accent-color: var(--color-primary);">
+                <div style="font-size: 0.85rem; color: var(--color-slate-700); line-height: 1.4;">
+                  <strong>All tutors are graduates</strong>
+                  <span style="display: block; font-size: 0.75rem; color: var(--color-slate-500);">Teaching staff must possess minimum graduation degree.</span>
+                </div>
+              </label>
+
+              <label class="align-center" style="gap: 0.75rem; cursor: pointer; align-items: flex-start;">
+                <input type="checkbox" id="undertake-noMisleadingAds" style="margin-top: 0.2rem; width: 1.05rem; height: 1.05rem; accent-color: var(--color-primary);">
+                <div style="font-size: 0.85rem; color: var(--color-slate-700); line-height: 1.4;">
+                  <strong>No misleading ads</strong>
+                  <span style="display: block; font-size: 0.75rem; color: var(--color-slate-500);">No false claims, guarantees, or grade-inflating details.</span>
+                </div>
+              </label>
+
+              <label class="align-center" style="gap: 0.75rem; cursor: pointer; align-items: flex-start;">
+                <input type="checkbox" id="undertake-oneSqMeterRule" style="margin-top: 0.2rem; width: 1.05rem; height: 1.05rem; accent-color: var(--color-primary);">
+                <div style="font-size: 0.85rem; color: var(--color-slate-700); line-height: 1.4;">
+                  <strong>1 sq. meter per student rule</strong>
+                  <span style="display: block; font-size: 0.75rem; color: var(--color-slate-500);">Ensure total floor spacing supports the enrollment.</span>
+                </div>
+              </label>
+
+              <button type="submit" id="save-undertakings-btn" class="btn btn-primary" style="margin-top: 1rem; width: 100%; border-radius: var(--radius-sm); height: 2.5rem; justify-content: center;">
+                Update Undertakings
+              </button>
+
+            </form>
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/institute-compliance.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

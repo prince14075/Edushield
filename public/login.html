@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In - EduShield Portal</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+  <div class="split-layout">
+    
+    <!-- Left side - Login Form -->
+    <div class="form-side">
+      <div class="form-container">
+        <a href="/" class="back-link">
+          <i data-lucide="arrow-left" style="width: 1rem; height: 1rem;"></i>
+          Back to Home
+        </a>
+
+        <div class="form-header">
+          <div class="align-center" style="gap: 0.5rem; margin-bottom: 2rem;">
+            <i data-lucide="shield" class="logo-icon" style="width: 2rem; height: 2rem;"></i>
+            <span style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 800;">EduShield</span>
+          </div>
+          <h2 class="form-title">Sign in to your account</h2>
+          <p class="form-desc">Access your compliance dashboard and monitoring tools.</p>
+        </div>
+
+        <!-- Role Toggle Selector -->
+        <div class="toggle-group">
+          <button type="button" class="toggle-btn active" id="toggle-institute">
+            <i data-lucide="building-2" style="width: 1rem; height: 1rem;"></i>
+            Institute
+          </button>
+          <button type="button" class="toggle-btn" id="toggle-admin">
+            <i data-lucide="user-cog" style="width: 1rem; height: 1rem;"></i>
+            Authority
+          </button>
+        </div>
+
+        <form id="login-form" class="form-box">
+          <!-- Error alert placeholder -->
+          <div id="error-alert" class="alert-box alert-error" style="display: none;">
+            <i data-lucide="alert-circle" style="width: 1.25rem; height: 1.25rem; flex-shrink: 0;"></i>
+            <span id="error-msg">Invalid credentials. Please check your ID and Password.</span>
+          </div>
+
+          <div class="form-field">
+            <label for="instituteId" class="form-label" id="id-label">Institute ID</label>
+            <input type="text" id="instituteId" required placeholder="e.g. INS-1204" class="form-input">
+          </div>
+
+          <div class="form-field">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" id="password" required class="form-input">
+          </div>
+
+          <div class="justify-between align-center" style="font-size: 0.875rem;">
+            <div class="form-checkbox-wrapper">
+              <input type="checkbox" id="remember-me" class="form-checkbox">
+              <label for="remember-me" class="form-checkbox-label">Remember me</label>
+            </div>
+            <a href="/forgot-password" style="color: var(--color-primary); font-weight: 600;">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-submit" style="width: 100%; height: 2.75rem; border-radius: var(--radius-sm);">
+            <span id="btn-text">Sign in</span>
+            <div class="spinner" id="btn-spinner" style="display: none;"></div>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Right side - Branding Image/Banner -->
+    <div class="brand-side">
+      <div class="brand-bg-1"></div>
+      <div class="brand-bg-2"></div>
+      
+      <div class="brand-card">
+        <h3 class="brand-card-title">Regulatory Compliance Made Simple.</h3>
+        <p class="brand-card-text">
+          EduShield automates the complex guidelines of the 2024 Ministry of Education directives. Our AI verifies infrastructure photos, tracks capacity limits in real-time, and guarantees student safety.
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/login.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

@@ -1,40 +1,27 @@
 {
-  "name": "edusheild-app",
-  "version": "0.1.0",
-  "private": true,
+  "name": "edushield",
+  "version": "1.0.0",
+  "description": "Edushield Educational Document Verification Compliance Portal",
+  "main": "server/index.js",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js"
   },
   "dependencies": {
-    "@types/pdf-parse": "^1.1.5",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.9.0",
-    "framer-motion": "^12.36.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
     "jsonwebtoken": "^9.0.3",
-    "lucide-react": "^0.577.0",
-    "mongodb": "^7.1.0",
     "mongoose": "^9.3.0",
-    "next": "16.1.6",
-    "next-auth": "^4.24.13",
+    "multer": "^1.4.5-lts.1",
     "nodemailer": "^7.0.13",
     "pdf-parse": "^2.4.5",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
     "tesseract.js": "^7.0.0"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^20",
-    "@types/nodemailer": "^7.0.11",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.1.6",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "nodemon": "^3.1.0"
   }
 }
