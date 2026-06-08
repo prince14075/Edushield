@@ -14,20 +14,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const rememberMeCheckbox = document.getElementById('remember-me');
 
-  // Load remembered credentials
-  const rememberedId = localStorage.getItem('remembered_id');
-  const rememberedRole = localStorage.getItem('remembered_role');
+  // Load remembered credentials by role
+  const getRememberedId = (role) => {
+    return role === 'admin' 
+      ? localStorage.getItem('remembered_admin_id') 
+      : localStorage.getItem('remembered_institute_id');
+  };
 
-  if (rememberedId) {
-    instituteIdInput.value = rememberedId;
+  const initialRole = localStorage.getItem('remembered_role') || 'institute';
+  activeRole = initialRole;
+
+  // Initial populate based on role
+  const initialId = getRememberedId(activeRole);
+  if (initialId) {
+    instituteIdInput.value = initialId;
     if (rememberMeCheckbox) rememberMeCheckbox.checked = true;
-    if (rememberedRole === 'admin') {
-      activeRole = 'admin';
-      toggleAdminBtn.classList.add('active');
-      toggleInstituteBtn.classList.remove('active');
-      idLabel.textContent = 'Admin ID';
-      instituteIdInput.placeholder = 'admin';
-    }
+  } else {
+    instituteIdInput.value = '';
+    if (rememberMeCheckbox) rememberMeCheckbox.checked = false;
+  }
+
+  if (activeRole === 'admin') {
+    toggleAdminBtn.classList.add('active');
+    toggleInstituteBtn.classList.remove('active');
+    idLabel.textContent = 'Admin ID';
+    instituteIdInput.placeholder = 'admin';
+  } else {
+    toggleInstituteBtn.classList.add('active');
+    toggleAdminBtn.classList.remove('active');
+    idLabel.textContent = 'Institute ID';
+    instituteIdInput.placeholder = 'e.g. INS-1204';
   }
 
   // Toggle roles functionality
@@ -38,6 +54,16 @@ document.addEventListener('DOMContentLoaded', () => {
     idLabel.textContent = 'Institute ID';
     instituteIdInput.placeholder = 'e.g. INS-1204';
     errorAlert.style.display = 'none';
+
+    // Populate or clear based on remembered institute ID
+    const savedInstId = getRememberedId('institute');
+    if (savedInstId) {
+      instituteIdInput.value = savedInstId;
+      if (rememberMeCheckbox) rememberMeCheckbox.checked = true;
+    } else {
+      instituteIdInput.value = '';
+      if (rememberMeCheckbox) rememberMeCheckbox.checked = false;
+    }
   });
 
   toggleAdminBtn.addEventListener('click', () => {
@@ -47,6 +73,16 @@ document.addEventListener('DOMContentLoaded', () => {
     idLabel.textContent = 'Admin ID';
     instituteIdInput.placeholder = 'admin';
     errorAlert.style.display = 'none';
+
+    // Populate or clear based on remembered admin ID
+    const savedAdminId = getRememberedId('admin');
+    if (savedAdminId) {
+      instituteIdInput.value = savedAdminId;
+      if (rememberMeCheckbox) rememberMeCheckbox.checked = true;
+    } else {
+      instituteIdInput.value = '';
+      if (rememberMeCheckbox) rememberMeCheckbox.checked = false;
+    }
   });
 
   // Handle Form Submit
@@ -56,13 +92,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const id = instituteIdInput.value.trim();
     const password = document.getElementById('password').value;
 
-    // Save or clear remembered ID
+    // Save or clear remembered ID by role
     if (rememberMeCheckbox && rememberMeCheckbox.checked) {
-      localStorage.setItem('remembered_id', id);
+      if (activeRole === 'admin') {
+        localStorage.setItem('remembered_admin_id', id);
+      } else {
+        localStorage.setItem('remembered_institute_id', id);
+      }
       localStorage.setItem('remembered_role', activeRole);
     } else {
-      localStorage.removeItem('remembered_id');
-      localStorage.removeItem('remembered_role');
+      if (activeRole === 'admin') {
+        localStorage.removeItem('remembered_admin_id');
+      } else {
+        localStorage.removeItem('remembered_institute_id');
+      }
+      // If no ID is remembered at all, clear the active role setting
+      if (!localStorage.getItem('remembered_admin_id') && !localStorage.getItem('remembered_institute_id')) {
+        localStorage.removeItem('remembered_role');
+      }
     }
 
     // Reset error
