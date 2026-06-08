@@ -4,12 +4,11 @@ const bcrypt = require('bcryptjs');
 const Institute = require('../models/Institute');
 const { authMiddleware } = require('../middleware/authMiddleware');
 
-// GET /api/institutes/me
 router.get('/me', authMiddleware('INSTITUTE'), async (req, res) => {
   try {
     const instituteId = req.user.instituteId;
-    
-    if (!instituteId) {
+
+        if (!instituteId) {
       return res.status(400).json({ success: false, error: 'Institute ID not found in token' });
     }
 
@@ -19,7 +18,6 @@ router.get('/me', authMiddleware('INSTITUTE'), async (req, res) => {
       return res.status(404).json({ success: false, error: 'Institute not found' });
     }
 
-    // Format response safely
     const formattedInstitute = {
       id: institute._id.toString(),
       instituteId: institute.instituteId,
@@ -42,7 +40,6 @@ router.get('/me', authMiddleware('INSTITUTE'), async (req, res) => {
   }
 });
 
-// GET /api/institutes/admin
 router.get('/admin', authMiddleware('ADMIN'), async (req, res) => {
   try {
     const institutes = await Institute.find({}).sort({ registrationDate: -1 });
@@ -74,7 +71,6 @@ router.get('/admin', authMiddleware('ADMIN'), async (req, res) => {
   }
 });
 
-// GET /api/institutes/public
 router.get('/public', async (req, res) => {
   try {
     const institutes = await Institute.find({}).sort({ registrationDate: -1 });
@@ -101,7 +97,6 @@ router.get('/public', async (req, res) => {
   }
 });
 
-// POST /api/institutes/register
 router.post('/register', async (req, res) => {
   try {
     const { 
@@ -130,15 +125,12 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    // 1. Generate random secure ID and Password
     const newId = `INS-${Math.floor(1000 + Math.random() * 9000)}`;
     const plainPassword = Math.random().toString(36).slice(-8).toUpperCase();
-    
-    // 2. Hash Password
+
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(plainPassword, salt);
-    
-    // 3. Save all data to MongoDB
+
     const newInstitute = new Institute({
       instituteId: newId,
       name,
@@ -179,8 +171,8 @@ router.post('/register', async (req, res) => {
 
   } catch (error) {
     console.error('Registration error:', error);
-    
-    if (error && error.code === 11000) {
+
+        if (error && error.code === 11000) {
       return res.status(409).json({ 
         success: false, 
         error: 'A duplicate institute ID was generated. Please try again.' 
@@ -194,7 +186,6 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// PUT /api/institutes/compliance
 router.put('/compliance', authMiddleware('INSTITUTE'), async (req, res) => {
   try {
     const instituteId = req.user.instituteId;
@@ -210,7 +201,6 @@ router.put('/compliance', authMiddleware('INSTITUTE'), async (req, res) => {
     }
 
     if (safetyCertificates) {
-      // Merge or replace certificates
       safetyCertificates.forEach(newCert => {
         const index = institute.safetyCertificates.findIndex(c => c.type === newCert.type);
         if (index > -1) {
@@ -229,14 +219,13 @@ router.put('/compliance', authMiddleware('INSTITUTE'), async (req, res) => {
       };
     }
 
-    // Auto-calculate risk status based on certificates and undertakings
     const fireCert = institute.safetyCertificates.find(c => c.type === 'Fire');
     const buildingCert = institute.safetyCertificates.find(c => c.type === 'Building');
-    
-    const hasFire = fireCert && fireCert.url && fireCert.aiVerificationStatus === 'Verified';
+
+        const hasFire = fireCert && fireCert.url && fireCert.aiVerificationStatus === 'Verified';
     const hasBuilding = buildingCert && buildingCert.url && buildingCert.aiVerificationStatus === 'Verified';
-    
-    const undertakingsChecked = 
+
+        const undertakingsChecked = 
       institute.undertakings.noUnder16 && 
       institute.undertakings.noSchoolHours && 
       institute.undertakings.graduateTutors && 
@@ -260,7 +249,6 @@ router.put('/compliance', authMiddleware('INSTITUTE'), async (req, res) => {
   }
 });
 
-// PUT /api/institutes/settings
 router.put('/settings', authMiddleware('INSTITUTE'), async (req, res) => {
   try {
     const instituteId = req.user.instituteId;

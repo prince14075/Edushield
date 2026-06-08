@@ -1,36 +1,31 @@
 document.addEventListener('DOMContentLoaded', () => {
   const searchForm = document.getElementById('search-form');
   const pincodeInput = document.getElementById('pincode-input');
-  
-  const loadingState = document.getElementById('loading-state');
+
+    const loadingState = document.getElementById('loading-state');
   const emptyState = document.getElementById('empty-state');
   const queriedPincodeText = document.getElementById('queried-pincode');
   const resultsList = document.getElementById('results-list');
-  
-  const searchSpinner = document.getElementById('search-spinner');
+
+    const searchSpinner = document.getElementById('search-spinner');
   const submitBtn = searchForm.querySelector('.btn-submit');
 
-  // Input filter for numbers only
   pincodeInput.addEventListener('input', (e) => {
     e.target.value = e.target.value.replace(/[^0-9]/g, '');
   });
 
-  // Calculate safety score helper
   function calculateSafetyScore(inst) {
     let score = 100;
-    
-    // Capacity check
+
     const enrolled = inst.capacity?.currentlyEnrolled || 0;
     const max = inst.capacity?.maxAllowed || 0;
     if (enrolled >= max && max > 0) {
       score -= 20;
     }
 
-    // Risk status
     if (inst.riskStatus === 'WARNING') score -= 15;
     if (inst.riskStatus === 'UNSAFE') score -= 50;
 
-    // Safety NOC checks
     const certs = inst.safetyCertificates || [];
     const verifiedCerts = certs.filter(c => c.aiVerificationStatus === 'Verified').length;
     const totalCerts = certs.length;
@@ -42,7 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return Math.max(0, score);
   }
 
-  // Handle Search Submission
   searchForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const pincode = pincodeInput.value.trim();
@@ -51,18 +45,17 @@ document.addEventListener('DOMContentLoaded', () => {
       return alert('Pincode must be exactly 6 digits.');
     }
 
-    // Reset view states
     emptyState.style.display = 'none';
     resultsList.innerHTML = '';
-    
-    loadingState.style.display = 'block';
+
+        loadingState.style.display = 'block';
     submitBtn.disabled = true;
     searchSpinner.style.display = 'block';
 
     try {
       const result = await API.queryPublicInstitutes(pincode);
-      
-      loadingState.style.display = 'none';
+
+            loadingState.style.display = 'none';
 
       if (result.success && result.data.length > 0) {
         renderResults(result.data);
@@ -82,8 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderResults(institutes) {
     institutes.forEach(inst => {
       const score = calculateSafetyScore(inst);
-      
-      // Safety Score Badge Styling
+
       let scoreColor = 'var(--color-emerald)';
       let scoreIcon = 'shield-check';
       let scoreText = 'Perfect 1:1 Student/Area Ratio';
@@ -151,10 +143,8 @@ document.addEventListener('DOMContentLoaded', () => {
       resultsList.appendChild(card);
     });
 
-    // Re-initialize icons inside dynamic content
     lucide.createIcons();
 
-    // Bind Audit details button click
     const auditBtns = resultsList.querySelectorAll('.view-audit-btn');
     auditBtns.forEach(btn => {
       btn.addEventListener('click', (e) => {

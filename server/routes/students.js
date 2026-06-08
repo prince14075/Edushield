@@ -10,18 +10,15 @@ function calculateAge(dob) {
   return Math.abs(ageDt.getUTCFullYear() - 1970);
 }
 
-// GET /api/students/list
 router.get('/list', authMiddleware('INSTITUTE'), async (req, res) => {
   try {
     const instituteIdStr = req.user.instituteId;
-    
-    // Fetch institute to get ObjectId
+
     const institute = await Institute.findOne({ instituteId: instituteIdStr });
     if (!institute) {
       return res.status(404).json({ success: false, error: 'Institute not found' });
     }
 
-    // Get all students for this institute
     const students = await Student.find({ instituteId: institute._id }).sort({ createdAt: -1 });
 
     return res.json({ success: true, data: students });
@@ -32,12 +29,11 @@ router.get('/list', authMiddleware('INSTITUTE'), async (req, res) => {
   }
 });
 
-// POST /api/students/register
 router.post('/register', authMiddleware('INSTITUTE'), async (req, res) => {
   try {
     const instituteIdStr = req.user.instituteId;
-    
-    const institute = await Institute.findOne({ instituteId: instituteIdStr });
+
+        const institute = await Institute.findOne({ instituteId: instituteIdStr });
     if (!institute) {
       return res.status(404).json({ success: false, error: 'Institute not found' });
     }
@@ -48,17 +44,15 @@ router.post('/register', authMiddleware('INSTITUTE'), async (req, res) => {
       return res.status(400).json({ success: false, error: 'Missing required student details including email' });
     }
 
-    // Capacity Check
     const { currentlyEnrolled, maxAllowed } = institute.capacity || { currentlyEnrolled: 0, maxAllowed: 0 };
-    
-    if (currentlyEnrolled >= maxAllowed && maxAllowed > 0) {
+
+        if (currentlyEnrolled >= maxAllowed && maxAllowed > 0) {
       return res.status(403).json({ 
         success: false, 
         error: `Capacity Exceeded: Your maximum allowed capacity is ${maxAllowed}. You cannot enroll more students.` 
       });
     }
 
-    // Age calculation
     const dobDate = new Date(dob);
     const age = calculateAge(dobDate);
 
@@ -69,7 +63,6 @@ router.post('/register', authMiddleware('INSTITUTE'), async (req, res) => {
       });
     }
 
-    // Qualification check
     if (qualification !== "Class X Passed" && qualification !== "Class XII Passed" && qualification !== "Graduate") {
       return res.status(403).json({
         success: false,
@@ -77,7 +70,6 @@ router.post('/register', authMiddleware('INSTITUTE'), async (req, res) => {
       });
     }
 
-    // Generate Student ID
     const studentId = `STU-${Math.floor(10000 + Math.random() * 90000)}`;
 
     const newStudent = new Student({
@@ -97,7 +89,6 @@ router.post('/register', authMiddleware('INSTITUTE'), async (req, res) => {
 
     await newStudent.save();
 
-    // Increment enrolled capacity
     institute.capacity.currentlyEnrolled = (institute.capacity.currentlyEnrolled || 0) + 1;
     await institute.save();
 

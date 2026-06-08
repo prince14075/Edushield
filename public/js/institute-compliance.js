@@ -4,18 +4,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const complianceLoading = document.getElementById('compliance-loading');
   const complianceView = document.getElementById('compliance-view');
-  
-  const statusBadge = document.getElementById('status-badge');
+
+    const statusBadge = document.getElementById('status-badge');
   const sidebarUserName = document.querySelector('.sidebar-user-name');
   const sidebarUserRole = document.querySelector('.sidebar-user-role');
-  
-  // Banner elements
+
   const banner = document.getElementById('compliance-banner');
   const bannerIcon = document.getElementById('banner-icon');
   const bannerTitle = document.getElementById('banner-title');
   const bannerDesc = document.getElementById('banner-desc');
 
-  // Checklist elements
   const checkNoUnder16 = document.getElementById('undertake-noUnder16');
   const checkNoSchoolHours = document.getElementById('undertake-noSchoolHours');
   const checkGraduateTutors = document.getElementById('undertake-graduateTutors');
@@ -24,27 +22,25 @@ document.addEventListener('DOMContentLoaded', async () => {
   const undertakingsForm = document.getElementById('undertakings-form');
   const saveUndertakingsBtn = document.getElementById('save-undertakings-btn');
 
-  // File Upload Elements
   const fileInput = document.getElementById('noc-file-input');
   const tableBody = document.getElementById('certificates-table-body');
-  
-  let currentInstitute = null;
-  let activeUploadType = ''; // To track which row triggered the file upload
 
-  // Fetch full institute details
+    let currentInstitute = null;
+  let activeUploadType = ''; 
+
   async function loadComplianceData() {
     try {
       complianceLoading.style.display = 'block';
       if (complianceView) complianceView.style.style = 'none';
-      
-      const result = await API.getInstituteMe();
+
+            const result = await API.getInstituteMe();
       complianceLoading.style.display = 'none';
-      
-      if (result.success) {
+
+            if (result.success) {
         currentInstitute = result.data;
         if (complianceView) complianceView.style.display = 'grid';
-        
-        renderHeaderAndSidebar();
+
+                renderHeaderAndSidebar();
         renderStatusBanner();
         renderCertificatesTable();
         fillUndertakings();
@@ -58,24 +54,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  // Header and Sidebar Details
   function renderHeaderAndSidebar() {
     if (!currentInstitute) return;
     const risk = currentInstitute.riskStatus || 'PENDING_REGISTRATION';
     statusBadge.textContent = risk === 'SAFE' ? 'Verified' : risk.replace('_', ' ');
     statusBadge.className = 'dashboard-badge ' + (risk === 'SAFE' ? 'success' : 'alert-error');
-    
-    if (sidebarUserName) sidebarUserName.textContent = currentInstitute.name;
+
+        if (sidebarUserName) sidebarUserName.textContent = currentInstitute.name;
     if (sidebarUserRole) sidebarUserRole.textContent = `ID: ${currentInstitute.instituteId}`;
   }
 
-  // System Status Banner Styling
   function renderStatusBanner() {
     if (!currentInstitute) return;
     const status = currentInstitute.riskStatus || 'PENDING_REGISTRATION';
     banner.style.display = 'flex';
-    
-    if (status === 'SAFE') {
+
+        if (status === 'SAFE') {
       banner.className = 'alert-box success';
       bannerIcon.setAttribute('data-lucide', 'shield-check');
       bannerTitle.textContent = 'System Status: SAFE';
@@ -94,11 +88,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       bannerTitle.textContent = 'System Status: COMPLIANCE WARNING';
       bannerDesc.textContent = 'Your institute requires additional verification or mandatory documents to become fully compliant.';
     }
-    
-    lucide.createIcons();
+
+        lucide.createIcons();
   }
 
-  // Render safety certificates table
   function renderCertificatesTable() {
     if (!currentInstitute) return;
     tableBody.innerHTML = '';
@@ -107,8 +100,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     ['Fire', 'Building', 'Other'].forEach(type => {
       const cert = certs.find(c => c.type === type);
       const tr = document.createElement('tr');
-      
-      let badgeHtml = '';
+
+            let badgeHtml = '';
       if (cert) {
         const isVerified = cert.aiVerificationStatus === 'Verified';
         const isPending = cert.aiVerificationStatus === 'Pending';
@@ -175,7 +168,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     lucide.createIcons();
 
-    // Bind upload trigger
     tableBody.querySelectorAll('.upload-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         activeUploadType = e.target.closest('.upload-btn').getAttribute('data-type');
@@ -184,32 +176,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Fill undertakings from DB
   function fillUndertakings() {
     if (!currentInstitute) return;
     const u = currentInstitute.undertakings || {};
-    
-    checkNoUnder16.checked = u.noUnder16 === true;
+
+        checkNoUnder16.checked = u.noUnder16 === true;
     checkNoSchoolHours.checked = u.noSchoolHours === true;
     checkGraduateTutors.checked = u.graduateTutors === true;
     checkNoMisleadingAds.checked = u.noMisleadingAds === true;
     checkOneSqMeterRule.checked = u.oneSqMeterRule === true;
   }
 
-  // Handle Certificate Upload & OCR processing
   fileInput.addEventListener('change', async (e) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       const targetType = activeUploadType;
-      
-      // Update table upload button to loading state
+
       const rowBtn = tableBody.querySelector(`.upload-btn[data-type="${targetType}"]`);
       const originalText = rowBtn.innerHTML;
       rowBtn.disabled = true;
       rowBtn.innerHTML = `<div class="spinner" style="width: 0.85rem; height: 0.85rem; border-top-color: var(--color-primary); border-width: 1.5px; display: inline-block;"></div> Checking...`;
 
       try {
-        // Step 1: Upload the file
         const uploadRes = await API.uploadFile(file);
         if (!uploadRes.success) {
           alert('Upload failed: ' + (uploadRes.error || 'Server error'));
@@ -220,13 +208,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const uploadedUrl = uploadRes.url;
 
-        // Step 2: Extract text using OCR (tesseract or pdf-parse)
         rowBtn.innerHTML = `<div class="spinner" style="width: 0.85rem; height: 0.85rem; border-top-color: var(--color-primary); border-width: 1.5px; display: inline-block;"></div> AI Scan...`;
-        
-        let extractedText = '';
+
+                let extractedText = '';
         let aiVerificationStatus = 'Pending';
-        
-        try {
+
+                try {
           const ocrRes = await API.scanOCR(file);
           if (ocrRes.success) {
             extractedText = ocrRes.text.toLowerCase();
@@ -235,9 +222,6 @@ document.addEventListener('DOMContentLoaded', async () => {
           console.warn('OCR processing failed, falling back to Pending Admin Review', ocrErr);
         }
 
-        // Step 3: Run AI Document Validation Rule
-        // Fire NOC requires: 'fire', 'safety', 'noc', 'extinguisher', 'clearance', 'commissioner', 'dept'
-        // Building NOC requires: 'building', 'safety', 'stability', 'structural', 'engineer', 'architect'
         if (extractedText) {
           if (targetType === 'Fire') {
             const hasKeywords = ['fire', 'safety', 'noc', 'clearance', 'hazard', 'extinguish', 'rescue'].some(w => extractedText.includes(w));
@@ -258,17 +242,14 @@ document.addEventListener('DOMContentLoaded', async () => {
               alert('EduShield AI Document Guard:\n\n⚠️ Safety document scanned, but failed to extract Building/Structural key-terms. Marked as "Pending verification".');
             }
           } else {
-            // Other certificates
             aiVerificationStatus = 'Verified';
             alert('EduShield AI Document Guard:\n\n✓ Certificate uploaded successfully and scanned.');
           }
         } else {
-          // No OCR text extracted (scanned image with poor resolution or OCR error)
           aiVerificationStatus = 'Pending';
           alert('EduShield Document Guard:\n\nUploaded document marked as "Pending review". Admin verification required.');
         }
 
-        // Step 4: Save to database
         const updateRes = await API.updateCompliance({
           safetyCertificates: [{
             type: targetType,
@@ -278,7 +259,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         if (updateRes.success) {
-          await loadComplianceData(); // Reload full list & status banner
+          await loadComplianceData(); 
         } else {
           alert('Failed to save certificate updates');
         }
@@ -293,11 +274,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // Undertakings submit handler
   undertakingsForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
-    saveUndertakingsBtn.disabled = true;
+
+        saveUndertakingsBtn.disabled = true;
     saveUndertakingsBtn.innerHTML = `<div class="spinner" style="width: 1rem; height: 1rem; border-top-color: #ffffff; border-width: 2px; display: inline-block;"></div> Saving...`;
 
     try {
@@ -325,6 +305,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // Load compliance details on startup
   loadComplianceData();
 });

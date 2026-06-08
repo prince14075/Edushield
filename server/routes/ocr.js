@@ -6,7 +6,6 @@ const Tesseract = require('tesseract.js');
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-// POST /api/ocr
 router.post('/', upload.single('file'), async (req, res) => {
   try {
     const file = req.file;
@@ -40,7 +39,6 @@ router.post('/', upload.single('file'), async (req, res) => {
       return res.status(400).json({ success: false, error: 'Unsupported file type' });
     }
 
-    // Clean up excessive whitespace
     const cleanText = extractedText.replace(/\s+/g, ' ').trim();
 
     return res.json({

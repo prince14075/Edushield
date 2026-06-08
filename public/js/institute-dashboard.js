@@ -4,11 +4,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const dashboardLoading = document.getElementById('dashboard-loading');
   const dashboardView = document.getElementById('dashboard-view');
-  
-  const welcomeTitle = document.getElementById('welcome-title');
+
+    const welcomeTitle = document.getElementById('welcome-title');
   const statusBadge = document.getElementById('status-badge');
-  
-  // Live capacity monitor elements
+
   const currentEnrolledCount = document.getElementById('current-enrolled-count');
   const maxAllowedCount = document.getElementById('max-allowed-count');
   const capacityPercentText = document.getElementById('capacity-percent-text');
@@ -18,14 +17,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   const alertHeader = document.getElementById('alert-header');
   const alertBody = document.getElementById('alert-body');
 
-  // Profile details elements
   const instProfileName = document.getElementById('inst-profile-name');
   const instProfileId = document.getElementById('inst-profile-id');
   const instProfileAddress = document.getElementById('inst-profile-address');
   const verifyStatusText = document.getElementById('verify-status-text');
   const verifyStatusIcon = document.getElementById('verify-status-icon');
 
-  // Task list and enrollments
   const complianceTaskRows = document.getElementById('compliance-task-rows');
   const recentEnrollmentsBox = document.getElementById('recent-enrollments-box');
 
@@ -54,23 +51,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     welcomeTitle.textContent = `Welcome back, ${profile.name}`;
     instProfileName.textContent = profile.name;
     instProfileId.textContent = `ID: ${profile.instituteId}`;
-    
-    // Format address
+
     const street = profile.address?.street || '';
     const city = profile.address?.city || '';
     const state = profile.address?.state || '';
     const pincode = profile.address?.pincode || '';
     instProfileAddress.textContent = `${street}, ${city}, ${state} ${pincode}`;
 
-    // Format Status Badge
     const riskStatus = profile.riskStatus || 'PENDING_REGISTRATION';
     statusBadge.textContent = riskStatus === 'SAFE' ? 'Verified' : riskStatus.replace('_', ' ');
     statusBadge.className = 'dashboard-badge ' + (riskStatus === 'SAFE' ? 'success' : 'alert-error');
-    
-    verifyStatusText.textContent = riskStatus.replace('_', ' ');
+
+        verifyStatusText.textContent = riskStatus.replace('_', ' ');
     verifyStatusText.style.color = riskStatus === 'SAFE' ? 'var(--color-emerald-text)' : 'var(--color-red-text)';
-    
-    // Live Capacity Monitor logic
+
     const current = profile.capacity?.currentlyEnrolled || 0;
     const max = profile.capacity?.maxAllowed || 0;
     const percent = max > 0 ? Math.round((current / max) * 100) : 0;
@@ -78,8 +72,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     currentEnrolledCount.textContent = current;
     maxAllowedCount.textContent = `/ ${max} students`;
     capacityPercentText.textContent = `${percent}% filled`;
-    
-    // Progress bar fill width
+
     capacityProgressBar.style.width = `${Math.min(percent, 100)}%`;
 
     const isOver = current > max;
@@ -108,14 +101,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       alertBody.textContent = "Your institute's active enrollments are compliant with the 1 sq.m per student rule.";
     }
 
-    // Render Compliance Tasks list
     renderComplianceTasks(profile);
   }
 
   function renderComplianceTasks(profile) {
     complianceTaskRows.innerHTML = '';
-    
-    const certs = profile.safetyCertificates || [];
+
+        const certs = profile.safetyCertificates || [];
     const complianceDocs = [
       { name: "Fire Safety Certificate", key: "Fire", type: "Document" },
       { name: "Building Safety Certificate", key: "Building", type: "Document" },
@@ -167,10 +159,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function renderStudents(students) {
     recentEnrollmentsBox.innerHTML = '';
-    
-    const slice = students.slice(0, 3);
-    
-    if (slice.length === 0) {
+
+        const slice = students.slice(0, 3);
+
+        if (slice.length === 0) {
       recentEnrollmentsBox.innerHTML = `<p style="font-size: 0.85rem; color: var(--color-slate-500); text-align: center; padding: 1rem 0;">No students enrolled yet.</p>`;
       return;
     }
@@ -178,8 +170,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     slice.forEach(student => {
       const row = document.createElement('div');
       row.className = 'justify-between align-center';
-      
-      row.innerHTML = `
+
+            row.innerHTML = `
         <div class="align-center" style="gap: 0.75rem;">
           <div class="sidebar-avatar" style="width: 2rem; height: 2rem; font-size: 0.8rem; background-color: var(--color-primary-light); color: var(--color-primary);">
             ${student.name.charAt(0).toUpperCase()}
@@ -199,7 +191,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     lucide.createIcons();
   }
 
-  // Double columns responsiveness utility
   function checkDoubleColumnLayout() {
     const detailsRow = document.getElementById('dashboard-details-row');
     if (window.innerWidth >= 768) {
@@ -212,6 +203,5 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.addEventListener('resize', checkDoubleColumnLayout);
   checkDoubleColumnLayout();
 
-  // Load details
   loadDashboardData();
 });

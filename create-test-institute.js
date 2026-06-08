@@ -3,7 +3,6 @@ const bcrypt = require('bcryptjs');
 
 const uri = process.env.MONGODB_URI || "mongodb://localhost:27017/Edushield?appName=Edushield";
 
-// Complete schema definition
 const InstituteSchema = new mongoose.Schema({
   instituteId: { type: String, required: true, unique: true },
   name: { type: String, required: true },
@@ -51,12 +50,10 @@ const Institute = mongoose.models.Institute || mongoose.model('Institute', Insti
 async function main() {
   try {
     await mongoose.connect(uri);
-    
-    // Hash password
+
     const plainPassword = "Password123!";
     const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
-    // Remove existing if any to refresh it
     await Institute.deleteOne({ instituteId: "INS-8888" });
 
     const newInst = new Institute({
@@ -115,8 +112,8 @@ async function main() {
     console.log("Institute ID: INS-8888");
     console.log("Password:     Password123!");
     console.log("---------------------------------------");
-    
-  } catch (err) {
+
+      } catch (err) {
     console.error(err);
   } finally {
     await mongoose.disconnect();

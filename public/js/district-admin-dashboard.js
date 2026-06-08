@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const pendingCounter = document.getElementById('pending-counter');
   const queueList = document.getElementById('deo-queue-list');
 
-  // Load registry queue
   async function fetchQueue() {
     deoLoading.style.display = 'block';
     deoEmpty.style.display = 'none';
@@ -32,16 +31,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  // Render queue items
   function renderQueue(items) {
     items.forEach(req => {
       const card = document.createElement('div');
       card.className = 'deo-card';
-      
-      const fireUrl = req.safetyCertificates?.[0]?.url || '#';
+
+            const fireUrl = req.safetyCertificates?.[0]?.url || '#';
       const buildingUrl = req.safetyCertificates?.[1]?.url || '#';
-      
-      const photoHtml = req.ownerDetails?.photoUrl 
+
+            const photoHtml = req.ownerDetails?.photoUrl 
         ? `<img src="${req.ownerDetails.photoUrl}" alt="Owner Avatar" style="width: 2.5rem; height: 2.5rem; border-radius: var(--radius-full); border: 1px solid var(--border-color); object-fit: cover;">`
         : '';
 
@@ -142,20 +140,18 @@ document.addEventListener('DOMContentLoaded', async () => {
       queueList.appendChild(card);
     });
 
-    // Re-bind Lucide icons
     lucide.createIcons();
 
-    // Bind action events
     queueList.querySelectorAll('.approve-btn').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         const id = e.target.closest('.approve-btn').getAttribute('data-id');
         if (!confirm('Are you sure you want to APPROVE this application?')) return;
-        
-        try {
+
+                try {
           const res = await API.updatePendingInstitute(id, 'Approve');
           if (res.success) {
             alert(res.message);
-            fetchQueue(); // Reload queue list
+            fetchQueue(); 
           } else {
             alert(res.error || 'Approval failed');
           }
@@ -169,12 +165,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       btn.addEventListener('click', async (e) => {
         const id = e.target.closest('.reject-btn').getAttribute('data-id');
         if (!confirm('Are you sure you want to REJECT this application?')) return;
-        
-        try {
+
+                try {
           const res = await API.updatePendingInstitute(id, 'Reject');
           if (res.success) {
             alert(res.message);
-            fetchQueue(); // Reload queue list
+            fetchQueue(); 
           } else {
             alert(res.error || 'Rejection failed');
           }
@@ -185,6 +181,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Load Registry queue
   fetchQueue();
 });

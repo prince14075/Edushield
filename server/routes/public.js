@@ -2,18 +2,16 @@ const express = require('express');
 const router = express.Router();
 const Institute = require('../models/Institute');
 
-// GET /api/public/institutes
 router.get('/institutes', async (req, res) => {
   try {
     const pincode = req.query.pincode || '';
 
     const query = { status: 'Approved' };
-    
-    if (pincode.trim() !== '') {
+
+        if (pincode.trim() !== '') {
       query['address.pincode'] = pincode;
     }
 
-    // Project fields securely to protect personal identifiable info (PII)
     const safeInstitutes = await Institute.find(query).select(
       'name address capacity infrastructure facilities safetyCertificates undertakings riskStatus'
     );

@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   let allStudents = [];
 
-  // Fetch status badge verified details
   async function fetchStatus() {
     try {
       const res = await API.getInstituteMe();
@@ -23,7 +22,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  // Fetch student roster
   async function loadStudents() {
     try {
       const result = await API.getStudentsList();
@@ -40,7 +38,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  // Render list
   function renderTable(list) {
     tableBody.innerHTML = '';
 
@@ -63,8 +60,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     list.forEach(student => {
       const tr = document.createElement('tr');
-      
-      const date = new Date(student.enrollmentDate || student.createdAt).toLocaleDateString();
+
+            const date = new Date(student.enrollmentDate || student.createdAt).toLocaleDateString();
       const guardianHtml = student.guardianDetails?.contact 
         ? `<p class="table-user-sub">Guardian: ${student.guardianDetails.contact}</p>` 
         : '';
@@ -113,7 +110,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     lucide.createIcons();
   }
 
-  // Filter roster
   searchInput.addEventListener('input', (e) => {
     const term = e.target.value.toLowerCase().trim();
     const filtered = allStudents.filter(student => 
@@ -124,7 +120,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderTable(filtered);
   });
 
-  // Init
   fetchStatus();
   loadStudents();
 });

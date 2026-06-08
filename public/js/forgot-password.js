@@ -3,29 +3,26 @@ document.addEventListener('DOMContentLoaded', () => {
   const step2Form = document.getElementById('step-2-form');
   const step3Form = document.getElementById('step-3-form');
   const sentIdentifierText = document.getElementById('sent-identifier-text');
-  
-  const s1Spinner = document.getElementById('s1-spinner');
+
+    const s1Spinner = document.getElementById('s1-spinner');
   const s2Spinner = document.getElementById('s2-spinner');
   const s3Spinner = document.getElementById('s3-spinner');
-  
-  const backToS1Btn = document.querySelector('.back-to-s1');
+
+    const backToS1Btn = document.querySelector('.back-to-s1');
 
   let savedIdentifier = '';
   let resetToken = '';
 
-  // Step 1: Request OTP
   step1Form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const identifierInput = document.getElementById('identifier');
     const identifier = identifierInput.value.trim();
 
-    // Check if it is a gmail address
     const isEmail = identifier.includes("@");
     if (isEmail && !identifier.toLowerCase().endsWith("@gmail.com")) {
       return alert("Only @gmail.com email addresses are allowed.");
     }
 
-    // Set loading
     const submitBtn = step1Form.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
     s1Spinner.style.display = 'block';
@@ -35,8 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (result.success) {
         savedIdentifier = identifier;
         sentIdentifierText.textContent = identifier;
-        
-        // Switch steps
+
         step1Form.classList.remove('active');
         step2Form.classList.add('active');
       } else {
@@ -50,7 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Step 2: Verify OTP
   step2Form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const otp = document.getElementById('otp').value.trim();
@@ -67,8 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const result = await API.verifyOTP(savedIdentifier, otp, 'Password_Reset');
       if (result.success && result.token) {
         resetToken = result.token;
-        
-        // Switch steps
+
         step2Form.classList.remove('active');
         step3Form.classList.add('active');
       } else {
@@ -82,13 +76,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Back button in step 2
   backToS1Btn.addEventListener('click', () => {
     step2Form.classList.remove('active');
     step1Form.classList.add('active');
   });
 
-  // Step 3: Reset Password
   step3Form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const newPassword = document.getElementById('newPassword').value;

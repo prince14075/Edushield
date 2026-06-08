@@ -9,10 +9,8 @@ const { protectPage } = require('./middleware/authMiddleware');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Connect to Database
 connectDB();
 
-// Middlewares
 app.use(cors({
   origin: ['http://localhost:5000', 'http://127.0.0.1:5000'],
   credentials: true
@@ -21,11 +19,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Serve Static Assets directly
-// Static files (css, js, uploads, favicon etc.) will be served from public
 app.use(express.static(path.join(__dirname, '../public')));
 
-// API Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/institutes', require('./routes/institute'));
 app.use('/api/admin', require('./routes/admin'));
@@ -36,8 +31,6 @@ app.use('/api/pincode', require('./routes/pincode'));
 app.use('/api/upload', require('./routes/upload'));
 app.use('/api/public', require('./routes/public'));
 
-// HTML Page routes with role protections
-// Public HTML Pages
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
@@ -57,7 +50,6 @@ app.get('/complaint', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/complaint.html'));
 });
 
-// Protected HTML Pages - Institute Portal
 app.get('/institute/dashboard', protectPage('INSTITUTE'), (req, res) => {
   res.sendFile(path.join(__dirname, '../public/institute-dashboard.html'));
 });
@@ -74,7 +66,6 @@ app.get('/institute/settings', protectPage('INSTITUTE'), (req, res) => {
   res.sendFile(path.join(__dirname, '../public/institute-settings.html'));
 });
 
-// Protected HTML Pages - HQ Admin Portal
 app.get('/admin/dashboard', protectPage('ADMIN'), (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin-dashboard.html'));
 });
@@ -91,17 +82,14 @@ app.get('/admin/settings', protectPage('ADMIN'), (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin-settings.html'));
 });
 
-// Protected HTML Pages - District Admin Portal
 app.get('/district-admin/dashboard', protectPage('ADMIN'), (req, res) => {
   res.sendFile(path.join(__dirname, '../public/district-admin-dashboard.html'));
 });
 
-// 404 Fallback - serve landing page or not found
 app.use((req, res) => {
   res.status(404).redirect('/');
 });
 
-// Start Express Server
 app.listen(PORT, () => {
   console.log(`Server is running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
 });

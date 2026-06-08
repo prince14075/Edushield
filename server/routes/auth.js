@@ -7,7 +7,6 @@ const Institute = require('../models/Institute');
 const Verification = require('../models/Verification');
 const { authMiddleware } = require('../middleware/authMiddleware');
 
-// POST /api/auth/login
 router.post('/login', async (req, res) => {
   try {
     const { instituteId, password } = req.body;
@@ -16,7 +15,6 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Institute/Admin ID and Password are required' });
     }
 
-    // Explicit check for system administrator credentials
     if (instituteId === 'Admin_EduShield_HQ' && password === 'Secure!2026@Edu') {
       const userPayload = {
         id: 'Admin_EduShield_HQ',
@@ -31,21 +29,19 @@ router.post('/login', async (req, res) => {
       res.cookie('token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 Days
+        maxAge: 30 * 24 * 60 * 60 * 1000, 
         sameSite: 'lax'
       });
 
       return res.json({ success: true, role: 'ADMIN', user: userPayload });
     }
 
-    // Check database for institute
     const institute = await Institute.findOne({ instituteId });
 
     if (!institute) {
       return res.status(401).json({ success: false, error: 'Invalid credentials: user not found' });
     }
 
-    // Verify password
     const isMatch = await bcrypt.compare(password, institute.password);
     if (!isMatch) {
       return res.status(401).json({ success: false, error: 'Invalid credentials: password incorrect' });
@@ -64,7 +60,7 @@ router.post('/login', async (req, res) => {
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 Days
+      maxAge: 30 * 24 * 60 * 60 * 1000, 
       sameSite: 'lax'
     });
 
@@ -76,18 +72,15 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// POST /api/auth/logout
 router.post('/logout', (req, res) => {
   res.clearCookie('token');
   return res.json({ success: true, message: 'Logged out successfully' });
 });
 
-// GET /api/auth/me
 router.get('/me', authMiddleware(), (req, res) => {
   return res.json({ success: true, user: req.user });
 });
 
-// POST /api/auth/send-otp
 router.post('/send-otp', async (req, res) => {
   try {
     const { identifier, type } = req.body;
@@ -96,10 +89,8 @@ router.post('/send-otp', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Identifier and type are required' });
     }
 
-    // Generate 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Save to Database
     await Verification.create({
       identifier,
       code: otp,
@@ -107,7 +98,6 @@ router.post('/send-otp', async (req, res) => {
     });
 
     if (identifier.includes("@")) {
-      // Send Email using Nodemailer
       if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
         const transporter = nodemailer.createTransport({
           service: 'gmail',
@@ -145,7 +135,6 @@ router.post('/send-otp', async (req, res) => {
   }
 });
 
-// POST /api/auth/verify-otp
 router.post('/verify-otp', async (req, res) => {
   try {
     const { identifier, code, type } = req.body;
@@ -154,14 +143,12 @@ router.post('/verify-otp', async (req, res) => {
       return res.status(400).json({ success: false, error: "Identifier, code, and type are required" });
     }
 
-    // Find the OTP record
     const record = await Verification.findOne({ identifier, code, type });
 
     if (!record) {
       return res.status(400).json({ success: false, error: "Invalid or expired verification code" });
     }
 
-    // Delete the record after successful verification
     await Verification.deleteOne({ _id: record._id });
 
     if (type === "Password_Reset") {
@@ -189,7 +176,6 @@ router.post('/verify-otp', async (req, res) => {
   }
 });
 
-// POST /api/auth/reset-password
 router.post('/reset-password', async (req, res) => {
   try {
     const { token, newPassword } = req.body;
@@ -198,7 +184,6 @@ router.post('/reset-password', async (req, res) => {
       return res.status(400).json({ success: false, error: "Token and new password required" });
     }
 
-    // Verify JWT
     let decoded;
     try {
       const secret = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || 'fallback_secret';
@@ -209,7 +194,6 @@ router.post('/reset-password', async (req, res) => {
 
     const { identifier } = decoded;
 
-    // Find Institute by email or contact
     const institute = await Institute.findOne({
       $or: [
         { "ownerDetails.email": identifier },
@@ -221,7 +205,6 @@ router.post('/reset-password', async (req, res) => {
       return res.status(404).json({ success: false, error: "No account found matching this identifier" });
     }
 
-    // Hash the new password and save
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 

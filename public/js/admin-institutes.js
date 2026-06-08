@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   let allInstitutes = [];
 
-  // Fetch registered institutes
   async function loadInstitutes() {
     try {
       const result = await API.getAdminInstitutes();
@@ -24,7 +23,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  // Render institutes inside table
   function renderTable(list) {
     tableBody.innerHTML = '';
 
@@ -35,15 +33,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     list.forEach(inst => {
       const tr = document.createElement('tr');
-      
-      // Determine Capacity visual status
+
       const isOver = inst.capacityPercentage > 100;
       const barFillColor = isOver ? 'var(--color-red)' : 'var(--color-emerald)';
       const barBgColor = isOver ? 'var(--color-red-light)' : 'var(--color-emerald-light)';
       const capText = isOver ? 'Over' : 'Safe';
       const capTextColor = isOver ? 'var(--color-red-text)' : 'var(--color-slate-600)';
 
-      // Determine Risk status visual details
       let riskBadgeHtml = '';
       if (inst.riskStatus === 'SAFE') {
         riskBadgeHtml = `<span class="dashboard-badge success" style="display: inline-flex; align-items: center; gap: 0.2rem;"><i data-lucide="shield-check" style="width: 0.8rem; height: 0.8rem;"></i>Verified Safe</span>`;
@@ -94,10 +90,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       tableBody.appendChild(tr);
     });
 
-    // Re-render CDN Lucide icons
     lucide.createIcons();
 
-    // Bind profile click actions
     const reviewBtns = tableBody.querySelectorAll('.review-profile-btn');
     reviewBtns.forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -107,7 +101,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Handle Search Input keyup
   function filterRegistry() {
     const term = searchInput.value.toLowerCase().trim();
     const risk = riskFilter.value;
@@ -124,6 +117,5 @@ document.addEventListener('DOMContentLoaded', async () => {
   searchInput.addEventListener('input', filterRegistry);
   riskFilter.addEventListener('change', filterRegistry);
 
-  // Load
   loadInstitutes();
 });

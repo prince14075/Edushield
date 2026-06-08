@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const user = await Auth.checkSession('INSTITUTE');
   if (!user) return;
 
-  // Header & sidebar details loading
   const statusBadge = document.getElementById('status-badge');
   const sidebarUserName = document.querySelector('.sidebar-user-name');
   const sidebarUserRole = document.querySelector('.sidebar-user-role');
@@ -14,8 +13,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const risk = res.data.riskStatus || 'PENDING_REGISTRATION';
         statusBadge.textContent = risk === 'SAFE' ? 'Verified' : risk.replace('_', ' ');
         statusBadge.className = 'dashboard-badge ' + (risk === 'SAFE' ? 'success' : 'alert-error');
-        
-        if (sidebarUserName) sidebarUserName.textContent = res.data.name;
+
+                if (sidebarUserName) sidebarUserName.textContent = res.data.name;
         if (sidebarUserRole) sidebarUserRole.textContent = `ID: ${res.data.instituteId}`;
       }
     } catch (err) {
@@ -24,20 +23,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   fetchStatus();
 
-  // Form Elements
   const form = document.getElementById('student-form');
   const errorAlert = document.getElementById('form-error-alert');
   const errorMessage = document.getElementById('error-message');
   const successView = document.getElementById('success-view');
   const formFieldsView = document.getElementById('form-fields-view');
-  
-  const nameInput = document.getElementById('student-name');
+
+    const nameInput = document.getElementById('student-name');
   const photoInput = document.getElementById('student-photo');
   const photoUploadLabel = document.getElementById('photo-upload-label');
   const photoPreviewContainer = document.getElementById('photo-preview-container');
   const photoPreviewImg = document.getElementById('photo-preview');
-  
-  const aadhaarInput = document.getElementById('student-aadhaar');
+
+    const aadhaarInput = document.getElementById('student-aadhaar');
   const aadhaarHelper = document.getElementById('aadhaar-helper');
   const dobInput = document.getElementById('student-dob');
   const qualificationSelect = document.getElementById('student-qualification');
@@ -45,14 +43,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   const courseInput = document.getElementById('student-course');
   const guardianNameInput = document.getElementById('guardian-name');
   const guardianContactInput = document.getElementById('guardian-contact');
-  
-  const enrollAnotherBtn = document.getElementById('enroll-another-btn');
+
+    const enrollAnotherBtn = document.getElementById('enroll-another-btn');
   const successMessage = document.getElementById('success-message');
   const submitBtn = document.getElementById('submit-btn');
 
   let photoUrl = '';
 
-  // Set max date of birth constraint (must be at least 16 years old)
   const today = new Date();
   const maxYear = today.getFullYear() - 16;
   const month = String(today.getMonth() + 1).padStart(2, '0');
@@ -60,15 +57,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   const maxDateOfBirth = `${maxYear}-${month}-${day}`;
   dobInput.max = maxDateOfBirth;
 
-  // Handle Aadhaar input changes
   aadhaarInput.addEventListener('input', (e) => {
     let val = e.target.value.replace(/\D/g, '').slice(0, 12);
     aadhaarInput.value = val;
-    
-    // Update helper text
+
     aadhaarHelper.innerHTML = `Must be exactly 12 digits (${val.length}/12) ${val.length === 12 ? '<span style="color: var(--color-emerald); font-weight: 600; margin-left: 0.25rem;">✓ Valid</span>' : ''}`;
 
-    // Mock Aadhaar DOB Extraction
     if (val.length === 12 && !dobInput.value) {
       const mockYear = today.getFullYear() - 17;
       dobInput.value = `${mockYear}-01-01`;
@@ -76,13 +70,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // Handle Photo Upload
   photoInput.addEventListener('change', async (e) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       photoUploadLabel.textContent = 'Uploading...';
-      
-      try {
+
+            try {
         const result = await API.uploadFile(file);
         if (result.success) {
           photoUrl = result.url;
@@ -101,13 +94,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // Form submit handler
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     errorAlert.style.display = 'none';
     errorMessage.textContent = '';
-    
-    const name = nameInput.value.trim();
+
+        const name = nameInput.value.trim();
     const aadhaarNumber = aadhaarInput.value.trim();
     const dob = dobInput.value;
     const qualification = qualificationSelect.value;
@@ -121,7 +113,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    // Client side age checks
     const dobDate = new Date(dob);
     let age = today.getFullYear() - dobDate.getFullYear();
     const m = today.getMonth() - dobDate.getMonth();
@@ -134,7 +125,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    // Client side qualification checks
     if (qualification !== 'Class X Passed' && qualification !== 'Class XII Passed' && qualification !== 'Graduate') {
       showError('Guidelines Violation: Student must have completed at least Class X to enroll.');
       return;
@@ -167,7 +157,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
       }
 
-      // Show success screen
       successMessage.textContent = `${name} has been verified as ${age} years old and meets the secondary education criteria. The institute's live capacity has been updated.`;
       formFieldsView.style.display = 'none';
       successView.style.display = 'block';
@@ -179,15 +168,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // Enroll another click handler
   enrollAnotherBtn.addEventListener('click', () => {
     form.reset();
     photoUrl = '';
     photoPreviewContainer.style.display = 'none';
     photoPreviewImg.src = '';
     photoUploadLabel.textContent = 'Upload Photo';
-    
-    aadhaarHelper.textContent = 'Must be exactly 12 digits (0/12)';
+
+        aadhaarHelper.textContent = 'Must be exactly 12 digits (0/12)';
     successView.style.display = 'none';
     formFieldsView.style.display = 'flex';
   });

@@ -2,11 +2,10 @@ const express = require('express');
 const router = express.Router();
 const Complaint = require('../models/Complaint');
 
-// POST /api/complaints
 router.post('/', async (req, res) => {
   try {
     const { 
-      type, // 'COMPLAINT' or 'SUGGESTION'
+      type, 
       complainantType, 
       complainantName, 
       complainantContact, 
@@ -15,12 +14,10 @@ router.post('/', async (req, res) => {
       description 
     } = req.body;
 
-    // Validate
     if (!type || !complainantType || !category || !description || !instituteNameText) {
       return res.status(400).json({ success: false, error: 'Missing required fields' });
     }
 
-    // Default complaint ID
     const complaintId = (type === 'SUGGESTION' ? 'SUGG-' : 'COMP-') + Math.random().toString(36).substr(2, 9).toUpperCase();
 
     const newComplaint = new Complaint({

@@ -1,9 +1,7 @@
 const jwt = require('jsonwebtoken');
 
-// Middleware to protect API routes
 const authMiddleware = (requiredRole) => {
   return (req, res, next) => {
-    // Read JWT from httpOnly cookie 'token'
     const token = req.cookies?.token;
 
     if (!token) {
@@ -13,8 +11,8 @@ const authMiddleware = (requiredRole) => {
     try {
       const secret = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || 'fallback_secret';
       const decoded = jwt.verify(token, secret);
-      
-      if (requiredRole && decoded.role !== requiredRole) {
+
+            if (requiredRole && decoded.role !== requiredRole) {
         return res.status(403).json({ success: false, error: 'Forbidden: Insufficient permissions' });
       }
 
@@ -28,7 +26,6 @@ const authMiddleware = (requiredRole) => {
   };
 };
 
-// Middleware to protect static page routes (redirect to login)
 const protectPage = (requiredRole) => {
   return (req, res, next) => {
     const token = req.cookies?.token;

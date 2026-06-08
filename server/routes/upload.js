@@ -4,7 +4,6 @@ const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
 
-// Configure local disk storage for uploaded files
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadsDir = path.join(__dirname, '../../public/uploads');
@@ -14,7 +13,6 @@ const storage = multer.diskStorage({
     cb(null, uploadsDir);
   },
   filename: (req, file, cb) => {
-    // Generate a unique filename using timestamp
     const uniqueName = `${Date.now()}-${file.originalname.replace(/\s+/g, '_')}`;
     cb(null, uniqueName);
   }
@@ -22,7 +20,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// POST /api/upload
 router.post('/', upload.single('file'), (req, res) => {
   try {
     if (!req.file) {

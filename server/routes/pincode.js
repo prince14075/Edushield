@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 
-// GET /api/pincode/:pincode
 router.get('/:pincode', async (req, res) => {
   const { pincode } = req.params;
 
@@ -11,8 +10,8 @@ router.get('/:pincode', async (req, res) => {
 
   try {
     const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
-    
-    if (!response.ok) {
+
+        if (!response.ok) {
        return res.status(response.status).json({ success: false, error: "Failed to fetch pincode details" });
     }
 

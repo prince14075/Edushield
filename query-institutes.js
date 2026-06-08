@@ -9,8 +9,8 @@ async function main() {
     const database = client.db('Edushield');
     const institutes = database.collection('institutes');
     const results = await institutes.find({}).toArray();
-    
-    console.log("Found Institutes:", results.length);
+
+        console.log("Found Institutes:", results.length);
     results.forEach(inst => {
       console.log(`- ID: ${inst.instituteId}, Name: ${inst.name}`);
     });

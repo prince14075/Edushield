@@ -6,8 +6,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const verifyBadge = document.getElementById('profile-verify-badge');
   const sidebarUserName = document.querySelector('.sidebar-user-name');
   const sidebarUserRole = document.querySelector('.sidebar-user-role');
-  
-  const instNameInput = document.getElementById('inst-name');
+
+    const instNameInput = document.getElementById('inst-name');
   const instEmailInput = document.getElementById('inst-email');
   const instPhoneInput = document.getElementById('inst-phone');
   const saveBtn = document.getElementById('save-settings-btn');
@@ -19,27 +19,24 @@ document.addEventListener('DOMContentLoaded', async () => {
       const result = await API.getInstituteMe();
       if (result.success) {
         currentInstitute = result.data;
-        
-        // Fill fields
+
         instNameInput.value = currentInstitute.name || '';
         instEmailInput.value = currentInstitute.ownerDetails?.email || '';
         instPhoneInput.value = currentInstitute.ownerDetails?.contact || '';
 
-        // Verification status details
         const risk = currentInstitute.riskStatus || 'PENDING_REGISTRATION';
         const isSafe = risk === 'SAFE';
-        
-        statusBadge.textContent = isSafe ? 'Verified' : risk.replace('_', ' ');
+
+                statusBadge.textContent = isSafe ? 'Verified' : risk.replace('_', ' ');
         statusBadge.className = 'dashboard-badge ' + (isSafe ? 'success' : 'alert-error');
-        
-        verifyBadge.innerHTML = `<i data-lucide="${isSafe ? 'shield-check' : 'alert-triangle'}" style="width: 0.9rem; height: 0.9rem;"></i> <span>${isSafe ? 'Verified' : 'Review Needed'}</span>`;
+
+                verifyBadge.innerHTML = `<i data-lucide="${isSafe ? 'shield-check' : 'alert-triangle'}" style="width: 0.9rem; height: 0.9rem;"></i> <span>${isSafe ? 'Verified' : 'Review Needed'}</span>`;
         verifyBadge.className = 'dashboard-badge ' + (isSafe ? 'success' : 'alert-error');
 
-        // Sidebar update
         if (sidebarUserName) sidebarUserName.textContent = currentInstitute.name;
         if (sidebarUserRole) sidebarUserRole.textContent = `ID: ${currentInstitute.instituteId}`;
-        
-        lucide.createIcons();
+
+                lucide.createIcons();
       }
     } catch (err) {
       console.error(err);
@@ -47,7 +44,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  // Handle settings update
   saveBtn.addEventListener('click', async () => {
     const name = instNameInput.value.trim();
     const supportPhone = instPhoneInput.value.trim();
@@ -69,7 +65,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       const result = await API.updateSettings({
         name,
-        supportPhone: supportPhone.replace(/[\s-+]/g, '').slice(-10) // Normalize to 10 digits
+        supportPhone: supportPhone.replace(/[\s-+]/g, '').slice(-10) 
       });
 
       if (result.success) {
@@ -88,6 +84,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // Load Settings
   loadSettings();
 });

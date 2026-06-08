@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let allInstitutes = [];
 
-  // Fetch verified institutes
   async function fetchDirectory() {
     try {
       const result = await API.getPublicInstitutes();
@@ -25,11 +24,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Render directory grid
   function renderDirectory(list) {
     dirResultsGrid.innerHTML = '';
-    
-    if (list.length === 0) {
+
+        if (list.length === 0) {
       dirEmpty.style.display = 'block';
       return;
     }
@@ -42,8 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
       card.style.position = 'relative';
       card.style.overflow = 'hidden';
       card.style.padding = '2rem 1.75rem 2.25rem';
-      
-      // Top caution alert for unsafe institutes
+
       let headerCautionHtml = '';
       let marginClass = '';
       if (!inst.safe) {
@@ -55,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
         marginClass = 'margin-top: 0.75rem;';
       }
 
-      // Safe Badge details
       const badgeClass = inst.safe ? 'success' : 'alert-error';
       const badgeIcon = inst.safe ? 'shield-check' : 'alert-triangle';
       const badgeText = inst.status;
@@ -102,10 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
       dirResultsGrid.appendChild(card);
     });
 
-    // Load Lucide CDN icons
     lucide.createIcons();
 
-    // Bind profile review trigger
     const profileBtns = dirResultsGrid.querySelectorAll('.view-profile-btn');
     profileBtns.forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -115,7 +109,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Handle Search Input Filter
   directorySearch.addEventListener('input', (e) => {
     const term = e.target.value.toLowerCase().trim();
     const filtered = allInstitutes.filter(inst => 
@@ -125,6 +118,5 @@ document.addEventListener('DOMContentLoaded', () => {
     renderDirectory(filtered);
   });
 
-  // Init
   fetchDirectory();
 });

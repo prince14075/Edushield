@@ -17,7 +17,7 @@ const VerificationSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
-    expires: 1800, // 30 minutes TTL
+    expires: 1800, 
   }
 }, { 
   timestamps: true 

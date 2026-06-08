@@ -5,7 +5,6 @@ const nodemailer = require('nodemailer');
 const Institute = require('../models/Institute');
 const { authMiddleware } = require('../middleware/authMiddleware');
 
-// GET /api/admin/pending-institutes
 router.get('/pending-institutes', authMiddleware('ADMIN'), async (req, res) => {
   try {
     const pendingInstitutes = await Institute.find({ status: 'Pending' }).sort({ registrationDate: -1 });
@@ -16,7 +15,6 @@ router.get('/pending-institutes', authMiddleware('ADMIN'), async (req, res) => {
   }
 });
 
-// PUT /api/admin/pending-institutes
 router.put('/pending-institutes', authMiddleware('ADMIN'), async (req, res) => {
   try {
     const { id, action } = req.body;
@@ -38,7 +36,6 @@ router.put('/pending-institutes', authMiddleware('ADMIN'), async (req, res) => {
       return res.json({ success: true, message: 'Institute rejected successfully' });
     }
 
-    // Approval Flow
     const plainPassword = Math.random().toString(36).slice(-8);
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(plainPassword, salt);
@@ -51,7 +48,6 @@ router.put('/pending-institutes', authMiddleware('ADMIN'), async (req, res) => {
     const ownerEmail = institute.ownerDetails?.email;
     const ownerMobile = institute.ownerDetails?.contact;
 
-    // Send Real Email with Login Credentials
     if (ownerEmail && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
       const transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -82,7 +78,6 @@ router.put('/pending-institutes', authMiddleware('ADMIN'), async (req, res) => {
       console.log(`[Mock Email] Registration Approved for ${institute.name}. ID: ${institute.instituteId}, PASS: ${plainPassword}`);
     }
 
-    // Mock SMS
     if (ownerMobile) {
       console.log(`[Mock SMS] Sent to ${ownerMobile}: Your EduShield registration is approved. ID: ${institute.instituteId}, PASS: ${plainPassword}`);
     }
