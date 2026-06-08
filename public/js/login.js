@@ -50,8 +50,20 @@ document.addEventListener('DOMContentLoaded', () => {
       const result = await API.login(id, password);
 
       if (result.success) {
-        // Redirect logic based on ID or role
-        if (result.role === 'ADMIN' || id === 'Admin_EduShield_HQ' || activeRole === 'admin') {
+        // Enforce role checks matching the selected tab
+        if (result.role === 'ADMIN' && activeRole !== 'admin') {
+          showError('Admin credentials cannot be used to log in as an Institute.');
+          await API.logout(); // Clear the cookie set by the server
+          return;
+        }
+        if (result.role === 'INSTITUTE' && activeRole !== 'institute') {
+          showError('Institute credentials cannot be used to log in as Admin.');
+          await API.logout(); // Clear the cookie set by the server
+          return;
+        }
+
+        // Redirect to appropriate dashboard
+        if (result.role === 'ADMIN') {
           window.location.href = '/admin/dashboard';
         } else {
           window.location.href = '/institute/dashboard';
