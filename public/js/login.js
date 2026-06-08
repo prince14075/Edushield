@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let activeRole = 'institute'; // Default active role
 
   const rememberMeCheckbox = document.getElementById('remember-me');
+  const passwordInput = document.getElementById('password');
 
   // Load remembered credentials by role
   const getRememberedId = (role) => {
@@ -21,18 +22,31 @@ document.addEventListener('DOMContentLoaded', () => {
       : localStorage.getItem('remembered_institute_id');
   };
 
+  const getRememberedPassword = (role) => {
+    return role === 'admin' 
+      ? localStorage.getItem('remembered_admin_pass') 
+      : localStorage.getItem('remembered_institute_pass');
+  };
+
+  const populateCredentials = (role) => {
+    const savedId = getRememberedId(role);
+    const savedPass = getRememberedPassword(role);
+    if (savedId) {
+      instituteIdInput.value = savedId;
+      passwordInput.value = savedPass || '';
+      if (rememberMeCheckbox) rememberMeCheckbox.checked = true;
+    } else {
+      instituteIdInput.value = '';
+      passwordInput.value = '';
+      if (rememberMeCheckbox) rememberMeCheckbox.checked = false;
+    }
+  };
+
   const initialRole = localStorage.getItem('remembered_role') || 'institute';
   activeRole = initialRole;
 
   // Initial populate based on role
-  const initialId = getRememberedId(activeRole);
-  if (initialId) {
-    instituteIdInput.value = initialId;
-    if (rememberMeCheckbox) rememberMeCheckbox.checked = true;
-  } else {
-    instituteIdInput.value = '';
-    if (rememberMeCheckbox) rememberMeCheckbox.checked = false;
-  }
+  populateCredentials(activeRole);
 
   if (activeRole === 'admin') {
     toggleAdminBtn.classList.add('active');
@@ -55,15 +69,8 @@ document.addEventListener('DOMContentLoaded', () => {
     instituteIdInput.placeholder = 'e.g. INS-1204';
     errorAlert.style.display = 'none';
 
-    // Populate or clear based on remembered institute ID
-    const savedInstId = getRememberedId('institute');
-    if (savedInstId) {
-      instituteIdInput.value = savedInstId;
-      if (rememberMeCheckbox) rememberMeCheckbox.checked = true;
-    } else {
-      instituteIdInput.value = '';
-      if (rememberMeCheckbox) rememberMeCheckbox.checked = false;
-    }
+    // Populate or clear based on remembered institute details
+    populateCredentials('institute');
   });
 
   toggleAdminBtn.addEventListener('click', () => {
@@ -74,15 +81,8 @@ document.addEventListener('DOMContentLoaded', () => {
     instituteIdInput.placeholder = 'admin';
     errorAlert.style.display = 'none';
 
-    // Populate or clear based on remembered admin ID
-    const savedAdminId = getRememberedId('admin');
-    if (savedAdminId) {
-      instituteIdInput.value = savedAdminId;
-      if (rememberMeCheckbox) rememberMeCheckbox.checked = true;
-    } else {
-      instituteIdInput.value = '';
-      if (rememberMeCheckbox) rememberMeCheckbox.checked = false;
-    }
+    // Populate or clear based on remembered admin details
+    populateCredentials('admin');
   });
 
   // Handle Form Submit
@@ -90,23 +90,27 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     
     const id = instituteIdInput.value.trim();
-    const password = document.getElementById('password').value;
+    const password = passwordInput.value;
 
-    // Save or clear remembered ID by role
+    // Save or clear remembered ID and password by role
     if (rememberMeCheckbox && rememberMeCheckbox.checked) {
       if (activeRole === 'admin') {
         localStorage.setItem('remembered_admin_id', id);
+        localStorage.setItem('remembered_admin_pass', password);
       } else {
         localStorage.setItem('remembered_institute_id', id);
+        localStorage.setItem('remembered_institute_pass', password);
       }
       localStorage.setItem('remembered_role', activeRole);
     } else {
       if (activeRole === 'admin') {
         localStorage.removeItem('remembered_admin_id');
+        localStorage.removeItem('remembered_admin_pass');
       } else {
         localStorage.removeItem('remembered_institute_id');
+        localStorage.removeItem('remembered_institute_pass');
       }
-      // If no ID is remembered at all, clear the active role setting
+      // If no credentials are remembered at all, clear the active role setting
       if (!localStorage.getItem('remembered_admin_id') && !localStorage.getItem('remembered_institute_id')) {
         localStorage.removeItem('remembered_role');
       }
