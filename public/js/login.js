@@ -12,6 +12,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let activeRole = 'institute'; // Default active role
 
+  const rememberMeCheckbox = document.getElementById('remember-me');
+
+  // Load remembered credentials
+  const rememberedId = localStorage.getItem('remembered_id');
+  const rememberedRole = localStorage.getItem('remembered_role');
+
+  if (rememberedId) {
+    instituteIdInput.value = rememberedId;
+    if (rememberMeCheckbox) rememberMeCheckbox.checked = true;
+    if (rememberedRole === 'admin') {
+      activeRole = 'admin';
+      toggleAdminBtn.classList.add('active');
+      toggleInstituteBtn.classList.remove('active');
+      idLabel.textContent = 'Admin ID';
+      instituteIdInput.placeholder = 'admin';
+    }
+  }
+
   // Toggle roles functionality
   toggleInstituteBtn.addEventListener('click', () => {
     activeRole = 'institute';
@@ -37,6 +55,15 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const id = instituteIdInput.value.trim();
     const password = document.getElementById('password').value;
+
+    // Save or clear remembered ID
+    if (rememberMeCheckbox && rememberMeCheckbox.checked) {
+      localStorage.setItem('remembered_id', id);
+      localStorage.setItem('remembered_role', activeRole);
+    } else {
+      localStorage.removeItem('remembered_id');
+      localStorage.removeItem('remembered_role');
+    }
 
     // Reset error
     errorAlert.style.display = 'none';
